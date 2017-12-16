@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity
                         .title(location.getName() + " Type: " + location.getType()));
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gpsdata, 12));
 
+                
             }
 
             @Override
