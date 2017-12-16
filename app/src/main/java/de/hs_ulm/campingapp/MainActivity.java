@@ -15,11 +15,14 @@ import android.view.View;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -82,7 +85,9 @@ public class MainActivity extends AppCompatActivity
                 LatLng gpsdata = new LatLng(lati, longi);
                 googleMap.addMarker(new MarkerOptions()
                         .position(gpsdata)
-                        .title(location.getName() + "Type: " + location.getType()));
+                        .title(location.getName() + " Type: " + location.getType()));
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gpsdata, 12));
+
             }
 
             @Override
@@ -109,7 +114,19 @@ public class MainActivity extends AppCompatActivity
         LatLng sydney = new LatLng(-33.852, 151.211);
         googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in sydney"));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
+
+        //Wenn man auf Marker klickt:
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
+                toast.show();
+                //GoogleMap
+                return false;
+            }
+        });
     }
+
 
     @Override
     public void onBackPressed() {
