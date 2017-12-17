@@ -9,21 +9,24 @@ public class Spot {
     private double latitude;
     private double longitude;
     private String name;
+    private String description;
     private String pic;
     private long timestamp;
     private String type;
     private boolean visible;
 
-    public Spot() {
+    public Spot()
+    {
         //Default constructor required for calls to DataSnapshot.getValue(Spot.class)
     }
-    public Spot(int authorID_, double latitude_, double longitude_, String name_, String pic_,
-                long timestamp_, String type_, boolean visible_)
+    public Spot(int authorID_, double latitude_, double longitude_, String name_,
+                String description_, String pic_, long timestamp_, String type_, boolean visible_)
     {
         this.authorID = authorID_;
         this.latitude = latitude_;
         this.longitude = longitude_;
         this.name = name_;
+        this.description = description_;
         this.pic = pic_;
         this.timestamp = timestamp_;
         this.type = type_;
@@ -41,9 +44,17 @@ public class Spot {
     {
         return name;
     }
+    public String getDescription()
+    {
+        return description;
+    }
     public String getType()
     {
         return type;
+    }
+    public String getPic()
+    {
+        return pic;
     }
 
 }

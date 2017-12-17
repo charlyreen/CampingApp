@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.provider.ContactsContract;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.ImageButton;
@@ -14,10 +11,6 @@ import android.widget.ImageView;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,14 +27,10 @@ import java.net.URL;
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
 {
     private Activity context;
-    private DatabaseReference mRootRef;
-    TextView tvTitle, tvSubTitle;
-
 
     public CustomInfoWindowAdapter(Activity context)
     {
         this.context = context;
-
     }
 
     @Override
@@ -54,22 +43,16 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
     public View getInfoContents(Marker marker)
     {
         View view = context.getLayoutInflater().inflate(R.layout.custominfowindow, null);
-        tvTitle = (TextView) view.findViewById(R.id.tv_title);
-        tvSubTitle = (TextView) view.findViewById(R.id.tv_subtitle);
-        ImageView mImage= (ImageView) view.findViewById(R.id.image);
-        Spot location = (Spot) marker.getTag();
-        tvTitle.setText(location.getName());
-        tvSubTitle.setText((CharSequence) location.getType());
 
-
+        TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
+        TextView tvSubTitle = (TextView) view.findViewById(R.id.tv_subtitle);
+        ImageButton image = (ImageButton) view.findViewById(R.id.image);
         //ImageView test = (ImageView) view.findViewById(R.id.image);
-        String uri_ = "http://static1.1.sqspcdn.com/static/f/394173/4801463/1258567659777/Twitter.bmp?token=E6epMyYR5dcpG0c7hsyeh2fBcPE%3D";
-        new DownloadImageTask(mImage)
-                .execute(uri_);
-        /*Uri bild = new Uri.Builder()
-               .path(uri_)
+
+        Uri bild = new Uri.Builder()
+               .path("http://static1.1.sqspcdn.com/static/f/394173/4801463/1258567659777/Twitter.bmp?token=E6epMyYR5dcpG0c7hsyeh2fBcPE%3D")
                .build();
-        image.setImageURI(bild);*/
+        image.setImageURI(bild);
 
 //        try
 //        {
@@ -89,35 +72,11 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
 
 
 
-
+        tvTitle.setText(marker.getTitle());
+        tvSubTitle.setText(marker.getSnippet());
 
         return view;
     }
 
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
 }
-

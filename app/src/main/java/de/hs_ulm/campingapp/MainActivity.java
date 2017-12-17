@@ -32,12 +32,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback
-{
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
-    GoogleMap map;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,7 +76,6 @@ public class MainActivity extends AppCompatActivity
     (über longitude und latitude irgendwie)*/
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-        map = googleMap;
         mRootRef.child("spots").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -88,11 +85,13 @@ public class MainActivity extends AppCompatActivity
                 double longi = location.getLongitude();
                 LatLng gpsdata = new LatLng(lati, longi);
 
+                CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(MainActivity.this);
+                googleMap.setInfoWindowAdapter(adapter);
+
                 googleMap.addMarker(new MarkerOptions()
                         .position(gpsdata)
                         .title(location.getName() + " Type: " + location.getType())
-                        .snippet("Hier liegt Giengen an der Brenz :)"))
-                        .setTag(location);
+                        .snippet("Hier liegt Giengen an der Brenz :)"));
 
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gpsdata, 12));
 
@@ -123,18 +122,20 @@ public class MainActivity extends AppCompatActivity
         LatLng sydney = new LatLng(-33.852, 151.211);
         googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in sydney"));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
-        CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(MainActivity.this);
-        googleMap.setInfoWindowAdapter(adapter);
-        googleMap.setOnInfoWindowClickListener(this);
 
+        //Wenn man auf Marker klickt:
+        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
+                toast.show();
+                marker.showInfoWindow();
+                //GoogleMap
+                return false;
+            }
+        });
+    }
 
-    }
-    @Override
-    public void onInfoWindowClick(Marker marker) {
-        marker.hideInfoWindow();
-        marker.showInfoWindow();
-        Toast.makeText(this, "info window clicked", Toast.LENGTH_LONG).show();
-    }
 
     @Override
     public void onBackPressed() {
@@ -195,7 +196,8 @@ public class MainActivity extends AppCompatActivity
 
     private void addNewDummySpot() {
         Spot dummy;
-        dummy = new Spot(1, (double) 48.5857, (double) 10.2058, "Pipikaka",
+        dummy = new Spot(1, (double) 48.5887, (double) 10.2058, "Giengen",
+                "Hier liegt Giengen an der Brenz :)",
                 "https://upload.wikimedia.org/wikipedia/commons/1/11/Giengen_an_der_Brenz_001.jpg",
                 1511978087, "sleep", true);
         mRootRef.child("spots").push().setValue(dummy);
