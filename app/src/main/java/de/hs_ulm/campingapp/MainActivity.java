@@ -51,7 +51,8 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 addNewDummySpot();
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                        .setAction("Action", null)
+                        .show();
             }
         });
 
@@ -83,12 +84,18 @@ public class MainActivity extends AppCompatActivity
                 double lati = location.getLatitude();
                 double longi = location.getLongitude();
                 LatLng gpsdata = new LatLng(lati, longi);
+
+                CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(MainActivity.this);
+                googleMap.setInfoWindowAdapter(adapter);
+
                 googleMap.addMarker(new MarkerOptions()
                         .position(gpsdata)
-                        .title(location.getName() + " Type: " + location.getType()));
+                        .title(location.getName() + " Type: " + location.getType())
+                        .snippet("Hier liegt Giengen an der Brenz :)"));
+
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gpsdata, 12));
 
-                
+
             }
 
             @Override
@@ -122,6 +129,7 @@ public class MainActivity extends AppCompatActivity
             public boolean onMarkerClick(Marker marker) {
                 Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
                 toast.show();
+                marker.showInfoWindow();
                 //GoogleMap
                 return false;
             }
