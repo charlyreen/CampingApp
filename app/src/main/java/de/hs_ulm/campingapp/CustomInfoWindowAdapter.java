@@ -27,6 +27,7 @@ import java.net.URL;
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
 {
     private Activity context;
+    private Spot location;
 
     public CustomInfoWindowAdapter(Activity context)
     {
@@ -42,12 +43,15 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
     @Override
     public View getInfoContents(Marker marker)
     {
+        location = (Spot) marker.getTag();
         View view = context.getLayoutInflater().inflate(R.layout.custominfowindow, null);
-
         TextView tvTitle = (TextView) view.findViewById(R.id.tv_title);
         TextView tvSubTitle = (TextView) view.findViewById(R.id.tv_subtitle);
-        ImageButton image = (ImageButton) view.findViewById(R.id.image);
-        //ImageView test = (ImageView) view.findViewById(R.id.image);
+        //ImageButton image = (ImageButton) view.findViewById(R.id.image);
+        ImageView image = (ImageView) view.findViewById(R.id.image);
+        tvTitle.setText(location.getName());
+        tvSubTitle.setText(location.getDescription());
+
 
         Uri bild = new Uri.Builder()
                .path("http://static1.1.sqspcdn.com/static/f/394173/4801463/1258567659777/Twitter.bmp?token=E6epMyYR5dcpG0c7hsyeh2fBcPE%3D")
@@ -69,11 +73,6 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
 //        {
 //            e.printStackTrace();
 //        }
-
-
-
-        tvTitle.setText(marker.getTitle());
-        tvSubTitle.setText(marker.getSnippet());
 
         return view;
     }

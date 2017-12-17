@@ -91,7 +91,8 @@ public class MainActivity extends AppCompatActivity
                 googleMap.addMarker(new MarkerOptions()
                         .position(gpsdata)
                         .title(location.getName() + " Type: " + location.getType())
-                        .snippet("Hier liegt Giengen an der Brenz :)"));
+                        .snippet("Hier liegt Giengen an der Brenz :)"))
+                .setTag(location);
 
                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gpsdata, 12));
 
