@@ -38,7 +38,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
     TextView tvTitle, tvSubTitle;
 
 
-    public CustomInfoWindowAdapter(Activity contextf)
+    public CustomInfoWindowAdapter(Activity context)
     {
         this.context = context;
 
