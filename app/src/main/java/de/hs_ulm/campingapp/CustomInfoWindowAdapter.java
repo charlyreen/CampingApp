@@ -54,25 +54,27 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
 
 
         Uri bild = new Uri.Builder()
-               .path("http://static1.1.sqspcdn.com/static/f/394173/4801463/1258567659777/Twitter.bmp?token=E6epMyYR5dcpG0c7hsyeh2fBcPE%3D")
+               .path(location.getPic())
                .build();
         image.setImageURI(bild);
 
-//        try
-//        {
-//            Bitmap bitmap =
-//                    BitmapFactory.decodeStream((InputStream)new URL("https://upload.wikimedia.org/wikipedia/commons/1/11/Giengen_an_der_Brenz_001.jpg")
-//                            .getContent());
-//            image.setImageBitmap(bitmap);
-//        }
-//        catch (MalformedURLException e)
-//        {
-//            e.printStackTrace();
-//        }
-//        catch (IOException e)
-//        {
-//            e.printStackTrace();
-//        }
+       //try
+       //{
+       //    Bitmap bitmap =
+       //            BitmapFactory.decodeStream((InputStream)new URL(location.getPic())
+       //                    .getContent());
+       //    image.setImageBitmap(bitmap);
+       //    image.isShown();
+       //
+       //}
+       //catch (MalformedURLException e)
+       //{
+       //    e.printStackTrace();
+       //}
+       //catch (IOException e)
+       //{
+       //    e.printStackTrace();
+       //}
 
         return view;
     }
