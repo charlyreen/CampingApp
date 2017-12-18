@@ -67,7 +67,11 @@ import java.text.DateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
+        GoogleMap.OnInfoWindowClickListener
+{
+
+
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
     private static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -85,12 +89,14 @@ public class MainActivity extends AppCompatActivity
     private Location mCurrentLocation;
     private Boolean mRequestingLocationUpdates;
     private String mLastUpdateTime;
+    private boolean mWasActive = false;
 
     private GoogleMap gMap;
 
 
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
+    String lastClickedSpotKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -173,8 +179,10 @@ public class MainActivity extends AppCompatActivity
                 googleMap.addMarker(new MarkerOptions()
                         .position(gpsdata)
                         .title(location.getName() + " Type: " + location.getType())
-                        .snippet("Hier liegt Giengen an der Brenz :)"))
+                        .snippet(dataSnapshot.getKey()))
                         .setTag(location);
+                Log.e("addMarkers",
+                        "Name: " + location.getName() + ", Key:" + dataSnapshot.getKey());
 
             }
 
@@ -207,6 +215,9 @@ public class MainActivity extends AppCompatActivity
         googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in sydney"));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
 
+        CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(MainActivity.this);
+        googleMap.setInfoWindowAdapter(adapter);
+
         //Wenn man auf Marker klickt:
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener()
         {
@@ -222,11 +233,24 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        googleMap.setOnInfoWindowClickListener(this);
+
         gMap = googleMap;
         //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(test, 12));
 
     }
 
+    @Override
+    public void onInfoWindowClick(Marker marker)
+    {
+        Intent startComment;
+        String spotkey;
+        spotkey = marker.getSnippet();
+        startComment = new Intent(this.getApplicationContext(), ShowComments.class);
+        startComment.putExtra("key", spotkey);
+        //Toast.makeText(getApplicationContext(), spotkey, Toast.LENGTH_LONG).show();
+        startActivity(startComment);
+    }
 
     @Override
     public void onBackPressed()
@@ -382,17 +406,21 @@ public class MainActivity extends AppCompatActivity
             {
                 return;
             }
-            gMap.setMyLocationEnabled(true);
 
-            gMap.animateCamera(CameraUpdateFactory
-                    .newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(),
-                            mCurrentLocation.getLongitude()), 15));
-
+            if(!mWasActive)
+            {
+                mWasActive = true;
+                gMap.setMyLocationEnabled(true);
+                gMap.animateCamera(CameraUpdateFactory
+                        .newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(),
+                                mCurrentLocation.getLongitude()), 15));
+            }
 
         }
         else
         {
             gMap.setMyLocationEnabled(false);
+            mWasActive = false;
         }
     }
 
