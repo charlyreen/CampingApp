@@ -1,5 +1,6 @@
 package de.hs_ulm.campingapp;
 
+import android.content.Intent;
 import android.nfc.Tag;
 import android.os.Bundle;
 
@@ -32,10 +33,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
+        GoogleMap.OnInfoWindowClickListener {
 
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
+    String lastClickedSpotKey;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +81,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mRootRef.child("spots").addChildEventListener(new ChildEventListener() {
+
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 /*das is quasi wie eine schleife , die die werte ausliest*/
@@ -85,18 +90,14 @@ public class MainActivity extends AppCompatActivity
                 double longi = location.getLongitude();
                 LatLng gpsdata = new LatLng(lati, longi);
 
-                CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(MainActivity.this);
-                googleMap.setInfoWindowAdapter(adapter);
-
                 googleMap.addMarker(new MarkerOptions()
                         .position(gpsdata)
                         .title(location.getName() + " Type: " + location.getType())
-                        .snippet("Hier liegt Giengen an der Brenz :)"))
+                        .snippet(dataSnapshot.getKey())) //Snippet = DB KEY
                 .setTag(location);
-
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gpsdata, 12));
-
-
+                Log.e("addMarkers",
+                        "Name: " + location.getName() + ", Key:" + dataSnapshot.getKey());
+                //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(gpsdata, 12));
             }
 
             @Override
@@ -119,24 +120,34 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-        /*BSPCODE um einen marker hinzuzufügen:
-        LatLng sydney = new LatLng(-33.852, 151.211);
-        googleMap.addMarker(new MarkerOptions().position(sydney).title("Marker in sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));*/
 
+        CustomInfoWindowAdapter adapter = new CustomInfoWindowAdapter(MainActivity.this);
+        googleMap.setInfoWindowAdapter(adapter);
         //Wenn man auf Marker klickt:
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
-                toast.show();
+                //Toast toast = Toast.makeText(getApplicationContext(), marker.getSnippet(), Toast.LENGTH_LONG);
+                //toast.show();
                 marker.showInfoWindow();
                 //GoogleMap
                 return false;
             }
         });
+        googleMap.setOnInfoWindowClickListener(this);
     }
 
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Intent startComment;
+        String spotkey;
+        spotkey = marker.getSnippet();
+        startComment = new Intent(this.getApplicationContext(), ShowComments.class);
+        startComment.putExtra("key", spotkey);
+        //Toast.makeText(getApplicationContext(), spotkey, Toast.LENGTH_LONG).show();
+        startActivity(startComment);
+
+    }
 
     @Override
     public void onBackPressed() {

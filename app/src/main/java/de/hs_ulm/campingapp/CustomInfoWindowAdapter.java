@@ -53,6 +53,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
         tvSubTitle.setText(location.getDescription());
 
 
+
         Uri bild = new Uri.Builder()
                .path("http://static1.1.sqspcdn.com/static/f/394173/4801463/1258567659777/Twitter.bmp?token=E6epMyYR5dcpG0c7hsyeh2fBcPE%3D")
                .build();
