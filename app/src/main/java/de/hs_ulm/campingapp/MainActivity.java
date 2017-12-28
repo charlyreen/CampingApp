@@ -65,6 +65,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity
     private boolean mWasActive = false;
 
     private GoogleMap gMap;
+    private HashMap<Spot, Marker> markers = new HashMap<Spot, Marker>();
 
 
     /*Firebase Data Reference*/
@@ -110,18 +113,18 @@ public class MainActivity extends AppCompatActivity
 
         //myLocation.setVisible(false);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                addNewDummySpot();
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .show();
-            }
-        });
+        //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        //fab.setOnClickListener(new View.OnClickListener()
+        //{
+        //    @Override
+        //    public void onClick(View view)
+        //    {
+        //        addNewDummySpot();
+        //        Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+        //                .setAction("Action", null)
+        //                .show();
+        //    }
+        //});
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -176,13 +179,19 @@ public class MainActivity extends AppCompatActivity
 
                 googleMap.setInfoWindowAdapter(adapter);
 
-                googleMap.addMarker(new MarkerOptions()
+                Marker newMarker = googleMap.addMarker(new MarkerOptions()
                         .position(gpsdata)
                         .title(location.getName() + " Type: " + location.getType())
-                        .snippet(dataSnapshot.getKey()))
-                        .setTag(location);
+                        .snippet(dataSnapshot.getKey()));
+                newMarker.setTag(location);
+
                 Log.e("addMarkers",
                         "Name: " + location.getName() + ", Key:" + dataSnapshot.getKey());
+
+                markers.put(location, newMarker);
+
+                //Toast.makeText(getApplicationContext(), dataSnapshot.getKey(), Toast.LENGTH_LONG).show();
+
 
             }
 
@@ -297,34 +306,82 @@ public class MainActivity extends AppCompatActivity
     {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
 
         if (id == R.id.nav_camera)
         {
-            // Handle the camera action
+            drawer.closeDrawer(GravityCompat.START);
         }
         else if (id == R.id.nav_gallery)
         {
-
+            drawer.closeDrawer(GravityCompat.START);
         }
         else if (id == R.id.nav_slideshow)
         {
-
+            drawer.closeDrawer(GravityCompat.START);
         }
         else if (id == R.id.nav_manage)
         {
-
+            drawer.closeDrawer(GravityCompat.START);
         }
-        else if (id == R.id.nav_share)
+        else if (id == R.id.nav_filt_none)
         {
-
+            Toast.makeText(getApplicationContext(), "testeroni" , Toast.LENGTH_LONG).show();
+            //drawer.openDrawer(GravityCompat.START);
+            for (Map.Entry<Spot,Marker> entry : markers.entrySet())
+            {
+                entry.getValue().setVisible(true);
+            }
         }
-        else if (id == R.id.nav_send)
+        else if (id == R.id.nav_filt_schlafpl)
         {
+            //Toast.makeText(getApplicationContext(), "testeroni" , Toast.LENGTH_LONG).show();
+            //drawer.openDrawer(GravityCompat.START);
+            for (Map.Entry<Spot,Marker> entry : markers.entrySet())
+            {
+                Spot key = entry.getKey();
+                Marker value = entry.getValue();
 
+                    if(key.getType().equalsIgnoreCase(getString(R.string.filter_sleep)))
+                        value.setVisible(true);
+                    else
+                        value.setVisible(false);
+                    //Toast.makeText(getApplicationContext(), key.getType()
+                    //        + "\n" + key.getName() + "\n"
+                    //        + value.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        else if (id == R.id.nav_filt_scene)
+        {
+            //drawer.openDrawer(GravityCompat.START);
+            for (Map.Entry<Spot,Marker> entry : markers.entrySet())
+            {
+                Spot key = entry.getKey();
+                Marker value = entry.getValue();
+
+                if(key.getType().equalsIgnoreCase(getString(R.string.filter_scene)))
+                    value.setVisible(true);
+                else
+                    value.setVisible(false);
+            }
+        }
+        else if (id == R.id.nav_filt_action)
+        {
+            //drawer.openDrawer(GravityCompat.START);
+            for (Map.Entry<Spot,Marker> entry : markers.entrySet())
+            {
+                Spot key = entry.getKey();
+                Marker value = entry.getValue();
+
+                if(key.getType().equalsIgnoreCase(getString(R.string.filter_action)))
+                    value.setVisible(true);
+                else
+                    value.setVisible(false);
+            }
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 

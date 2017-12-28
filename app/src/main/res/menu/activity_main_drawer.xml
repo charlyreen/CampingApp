@@ -4,32 +4,52 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_camera"
+            android:checkable="false"
             android:icon="@drawable/ic_menu_camera"
             android:title="Import" />
         <item
             android:id="@+id/nav_gallery"
+            android:checkable="false"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Gallery" />
         <item
             android:id="@+id/nav_slideshow"
+            android:checkable="false"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Slideshow" />
         <item
             android:id="@+id/nav_manage"
+            android:checkable="false"
             android:icon="@drawable/ic_menu_manage"
             android:title="Tools" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="Filter">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:id="@+id/nav_filt_none"
+                android:checkable="true"
+                android:checked="true"
+                android:icon="@android:drawable/ic_menu_zoom"
+                android:title="Keine Filter" />
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/nav_filt_schlafpl"
+                android:checkable="true"
+                android:checked="false"
+                android:icon="@android:drawable/ic_menu_zoom"
+                android:title="@string/filter_sleep" />
+            <item
+                android:id="@+id/nav_filt_scene"
+                android:checkable="true"
+                android:checked="false"
+                android:icon="@android:drawable/ic_menu_zoom"
+                android:title="@string/filter_scene" />
+            <item
+                android:id="@+id/nav_filt_action"
+                android:checkable="true"
+                android:checked="false"
+                android:icon="@android:drawable/ic_menu_zoom"
+                android:title="@string/filter_action" />
         </menu>
     </item>
 
