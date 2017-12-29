@@ -6,7 +6,18 @@
     android:layout_height="match_parent"
     tools:context="de.hs_ulm.campingapp.ShowComments">
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/commNewComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_add" />
+
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -30,6 +41,8 @@
             style="@android:style/Widget.Holo.Light.RatingBar.Indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:defaultFocusHighlightEnabled="false"
+            android:filterTouchesWhenObscured="true"
             android:isIndicator="true"
             android:numStars="5"
             android:scaleX="1"
@@ -39,7 +52,7 @@
         <ListView
             android:id="@+id/commListView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"></ListView>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

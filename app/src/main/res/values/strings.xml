@@ -17,4 +17,7 @@
     <string name="filter_sleep">Schlafplatz</string>
     <string name="filter_scene">Szenisch</string>
     <string name="filter_action">Action</string>
+
+    <string name="makeNewComments_yourRating">Deine Bewertung für diesen Spot:</string>
+    <string name="makeNewComments_writeComment">Gib bitte eine kurzen Bewertung oder einen Kommentar zu diesem Spot ab:</string>
 </resources>

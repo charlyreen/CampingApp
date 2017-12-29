@@ -252,13 +252,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        Intent startComment;
+        Intent showComment;
         String spotkey;
+        Spot currLocation;
+        currLocation = (Spot) marker.getTag();
         spotkey = marker.getSnippet();
-        startComment = new Intent(this.getApplicationContext(), ShowComments.class);
-        startComment.putExtra("key", spotkey);
+        showComment = new Intent(this.getApplicationContext(), ShowComments.class);
+        //Key wird extra übergeben, weil er "eigentlich" nicht zum Spot Objekt gehört
+
+        //Um DB Traffic zu sparen wird der jeweilige Spot "gebundlet" komplett übergeben!
+        showComment.putExtras(currLocation.toBundle());
+        showComment.putExtra("key", spotkey);
         //Toast.makeText(getApplicationContext(), spotkey, Toast.LENGTH_LONG).show();
-        startActivity(startComment);
+        startActivity(showComment);
     }
 
     @Override
@@ -388,7 +394,7 @@ public class MainActivity extends AppCompatActivity
     private void addNewDummySpot()
     {
         Spot dummy;
-        dummy = new Spot(1, (double) 48.5887, (double) 10.2058, "Giengen",
+        dummy = new Spot("yodawg", (double) 48.5887, (double) 10.2058, "Giengen",
                 "Hier liegt Giengen an der Brenz :)",
                 "https://upload.wikimedia.org/wikipedia/commons/1/11/Giengen_an_der_Brenz_001.jpg",
                 1511978087, "sleep", true);
