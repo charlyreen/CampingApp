@@ -32,7 +32,7 @@
         app:layout_constraintRight_toRightOf="parent"/>
 
     <RatingBar
-        android:id="@+id/ratingBar2"
+        android:id="@+id/newCommRatingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:numStars="5"
@@ -59,19 +59,19 @@
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ratingBar2" />
+        app:layout_constraintTop_toBottomOf="@+id/newCommRatingBar" />
 
     <EditText
-        android:id="@+id/editText2"
+        android:id="@+id/newCommComment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textMultiLine"
         android:selectAllOnFocus="false"
         android:singleLine="false"
-        app:layout_constraintTop_toBottomOf="@+id/writeComment"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/writeComment" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/newCommConfirm"

@@ -258,10 +258,13 @@ public class MainActivity extends AppCompatActivity
         currLocation = (Spot) marker.getTag();
         spotkey = marker.getSnippet();
         showComment = new Intent(this.getApplicationContext(), ShowComments.class);
-        //Key wird extra übergeben, weil er "eigentlich" nicht zum Spot Objekt gehört
+
 
         //Um DB Traffic zu sparen wird der jeweilige Spot "gebundlet" komplett übergeben!
-        showComment.putExtras(currLocation.toBundle());
+        Bundle b = new Bundle();
+        b = currLocation.toBundle();
+        showComment.putExtras(b);
+        //Key wird extra übergeben, weil er "eigentlich" nicht zum Spot Objekt gehört
         showComment.putExtra("key", spotkey);
         //Toast.makeText(getApplicationContext(), spotkey, Toast.LENGTH_LONG).show();
         startActivity(showComment);
