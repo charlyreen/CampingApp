@@ -31,10 +31,16 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/commDistance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="distance" />
+
+        <TextView
             android:id="@+id/commDescr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TextView" />
+            android:text="Description" />
 
         <RatingBar
             android:id="@+id/commRating"

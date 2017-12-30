@@ -1,6 +1,7 @@
 package de.hs_ulm.campingapp;
 
 import android.content.Intent;
+import android.location.Location;
 import android.media.Rating;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -33,6 +34,7 @@ public class ShowComments extends AppCompatActivity {
     TextView mDescr;
     RatingBar mCommRating;
     FloatingActionButton mCommNewComment;
+    TextView mDistance;
     float spotRating = 0;
     private int commCounter;
 
@@ -49,11 +51,16 @@ public class ShowComments extends AppCompatActivity {
         mDescr = (TextView) findViewById(R.id.commDescr);
         mCommRating = (RatingBar) findViewById(R.id.commRating);
         mCommNewComment = (FloatingActionButton) findViewById(R.id.commNewComment);
+        mDistance = (TextView) findViewById(R.id.commDistance);
 
         //get Intent: Spot data + spotKey!
         Bundle extras = getIntent().getExtras();
         String spotkey = extras.getString("key");
         Spot thisSpot = new Spot(extras);
+        //get Intent: current GPS Location currloc
+        Location mCurrentLocation = new Location("currentLocation");
+        mCurrentLocation.setLatitude(extras.getFloat("currLocLatitude"));
+        mCurrentLocation.setLongitude(extras.getFloat("currLocLongitude"));
 
         //onClick Floating Button-> Make new Comment Activity
         final Intent makeNewComment;
@@ -83,6 +90,8 @@ public class ShowComments extends AppCompatActivity {
                         .setRating((float) model.getRating());
                 ((TextView) v.findViewById(R.id.commentTXTVcomment))
                         .setText(model.getText());
+                ((TextView) v.findViewById(R.id.commentTXTVdate))
+                        .setText(model.getDate());
                 spotRating += model.getRating();
             }
 
@@ -94,7 +103,7 @@ public class ShowComments extends AppCompatActivity {
         //set Title, Description of Location from Intent Extra Spot Object
         mTitle.setText(thisSpot.getName());
         mDescr.setText(thisSpot.getDescription());
-
+        mDistance.setText(thisSpot.getDistanceToInKM(mCurrentLocation) + " " +getString(R.string.showComments_distance));
     }
     @Override
     protected void onStart() {

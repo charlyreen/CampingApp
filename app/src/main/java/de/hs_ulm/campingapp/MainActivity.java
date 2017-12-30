@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity
 
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
-    String lastClickedSpotKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -158,7 +157,6 @@ public class MainActivity extends AppCompatActivity
     /*FIREBASE INTEGRATION*/
     /*TODO: lade nur die Spots, die im aktuellen Sichtfeld zu sehen sind
     (über longitude und latitude irgendwie)*/
-
     @Override
     public void onMapReady(final GoogleMap googleMap)
     {
@@ -233,8 +231,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker)
             {
-                Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
-                toast.show();
+                //Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
+                //toast.show();
                 marker.showInfoWindow();
 
                 //GoogleMap
@@ -254,18 +252,21 @@ public class MainActivity extends AppCompatActivity
     {
         Intent showComment;
         String spotkey;
-        Spot currLocation;
-        currLocation = (Spot) marker.getTag();
+        Spot currSpot;
+
+        currSpot = (Spot) marker.getTag();
         spotkey = marker.getSnippet();
         showComment = new Intent(this.getApplicationContext(), ShowComments.class);
 
 
         //Um DB Traffic zu sparen wird der jeweilige Spot "gebundlet" komplett übergeben!
         Bundle b = new Bundle();
-        b = currLocation.toBundle();
+        b = currSpot.toBundle();
         showComment.putExtras(b);
         //Key wird extra übergeben, weil er "eigentlich" nicht zum Spot Objekt gehört
         showComment.putExtra("key", spotkey);
+        showComment.putExtra("currLocLatitude", (float) mCurrentLocation.getLatitude());
+        showComment.putExtra("currLocLongitude", (float) mCurrentLocation.getLongitude());
         //Toast.makeText(getApplicationContext(), spotkey, Toast.LENGTH_LONG).show();
         startActivity(showComment);
     }

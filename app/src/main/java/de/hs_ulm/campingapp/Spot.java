@@ -1,6 +1,9 @@
 package de.hs_ulm.campingapp;
 
+import android.location.Location;
 import android.os.Bundle;
+
+import java.math.BigDecimal;
 
 /**
  * Created by Rene on 14.12.2017.
@@ -82,5 +85,19 @@ public class Spot {
         b.putBoolean("visible", visible);
         return b;
     }
-
+    private float getDistanceTo(Location loc) {
+        //get Distance from this spot to another location object in meters!
+        Location thisLoc = new Location(name);
+        thisLoc.setLatitude(latitude);
+        thisLoc.setLongitude(longitude);
+        float distance = thisLoc.distanceTo(loc);
+        return distance;
+    }
+    public String getDistanceToInKM(Location loc)
+    {
+        float distanceInM = this.getDistanceTo(loc)/1000;
+        BigDecimal bd = new BigDecimal(Float.toString(distanceInM));
+        bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
+        return bd.toString() + " km";
+    }
 }
