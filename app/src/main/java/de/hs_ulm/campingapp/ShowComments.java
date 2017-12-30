@@ -1,5 +1,6 @@
 package de.hs_ulm.campingapp;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -82,7 +83,8 @@ public class ShowComments extends AppCompatActivity {
         });
 
         //Get Comments from DB (limited to last 10)
-        Query queryFiltered = mRootRef.child("comments").child(spotkey).limitToLast(10);
+        int loadMoreLimit = 3; //only x entry shall be loaded, then another 10 if you scroll down and so on...
+        Query queryFiltered = mRootRef.child("comments").child(spotkey).orderByKey();
         FirebaseListOptions<SpotComment> options = new FirebaseListOptions.Builder<SpotComment>()
                 .setQuery(queryFiltered, SpotComment.class)
                 .setLayout(R.layout.layout_commentlist)
@@ -101,11 +103,18 @@ public class ShowComments extends AppCompatActivity {
                         .setText(model.getDate());
                 spotRating += model.getRating();
             }
+            @Override
+            public SpotComment getItem(int position) {
+                //Hack to show items in descending order
+                return super.getItem(getCount() - 1 - position);
+            }
 
         };
 
         //Attach Adapter to ListView
+
         mListComments.setAdapter(listAdapter);
+
 
         //set Title, Description of Location from Intent Extra Spot Object
         mTitle.setText(thisSpot.getName());
