@@ -1,13 +1,16 @@
 package de.hs_ulm.campingapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.media.Image;
 import android.media.Rating;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -35,6 +38,8 @@ public class ShowComments extends AppCompatActivity {
     RatingBar mCommRating;
     FloatingActionButton mCommNewComment;
     TextView mDistance;
+    TextView mType;
+    ImageView mSpotPic;
     float spotRating = 0;
     private int commCounter;
 
@@ -52,6 +57,8 @@ public class ShowComments extends AppCompatActivity {
         mCommRating = (RatingBar) findViewById(R.id.commRating);
         mCommNewComment = (FloatingActionButton) findViewById(R.id.commNewComment);
         mDistance = (TextView) findViewById(R.id.commDistance);
+        mType = (TextView) findViewById(R.id.commType);
+        mSpotPic = (ImageView) findViewById(R.id.spotPic);
 
         //get Intent: Spot data + spotKey!
         Bundle extras = getIntent().getExtras();
@@ -104,6 +111,9 @@ public class ShowComments extends AppCompatActivity {
         mTitle.setText(thisSpot.getName());
         mDescr.setText(thisSpot.getDescription());
         mDistance.setText(thisSpot.getDistanceToInKM(mCurrentLocation) + " " +getString(R.string.showComments_distance));
+        mType.setText(thisSpot.getType());
+        //Download Image in Background -> UI doesnt freeze meeeen
+        new DownloadImageTask(mSpotPic).execute(thisSpot.getPic());
     }
     @Override
     protected void onStart() {
@@ -129,5 +139,4 @@ public class ShowComments extends AppCompatActivity {
         super.onStop();
         listAdapter.stopListening();
     }
-
 }
