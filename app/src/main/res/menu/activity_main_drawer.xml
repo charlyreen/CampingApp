@@ -33,7 +33,7 @@
                 android:icon="@android:drawable/ic_menu_zoom"
                 android:title="Keine Filter" />
             <item
-                android:id="@+id/nav_filt_schlafpl"
+                android:id="@+id/nav_filt_sleep"
                 android:checkable="true"
                 android:checked="false"
                 android:icon="@android:drawable/ic_menu_zoom"

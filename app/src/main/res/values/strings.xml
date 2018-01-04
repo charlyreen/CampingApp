@@ -14,7 +14,7 @@
         functionality.</string>
     <string name="settings">Settings</string>
 
-    <string name="filter_sleep">Schlafplatz</string>
-    <string name="filter_scene">Szenisch</string>
+    <string name="filter_sleep">Sleeping</string>
+    <string name="filter_scene">Scenic</string>
     <string name="filter_action">Action</string>
 </resources>
