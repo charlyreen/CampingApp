@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="de.hs_ulm.campingapp.MakeNewComment">
+
+    <TextView
+        android:id="@+id/newCommTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Title of a nice spot!"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/newCommDescr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newCommTitle" />
+
+    <TextView
+        android:id="@+id/newCommYourRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/makeNewComments_yourRating"
+        app:layout_constraintTop_toBottomOf="@+id/newCommDescr"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <RatingBar
+        android:id="@+id/newCommRatingBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:rating="5"
+        android:scaleX="1"
+        android:scaleY="1"
+        android:stepSize="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newCommYourRating" />
+
+    <View
+        android:id="@+id/commentLine"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@android:color/black"
+        app:layout_constraintBottom_toTopOf="@+id/newCommYourRating" />
+
+    <TextView
+        android:id="@+id/writeComment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/makeNewComments_writeComment"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newCommRatingBar" />
+
+    <EditText
+        android:id="@+id/newCommComment"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:selectAllOnFocus="false"
+        android:singleLine="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/writeComment" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/newCommConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:clickable="true"
+        app:backgroundTint="@color/colorPrimary"
+        app:elevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_add" />
+
+</android.support.constraint.ConstraintLayout>

@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity
 
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
-    String lastClickedSpotKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -147,7 +146,6 @@ public class MainActivity extends AppCompatActivity
     /*FIREBASE INTEGRATION*/
     /*TODO: lade nur die Spots, die im aktuellen Sichtfeld zu sehen sind
     (über longitude und latitude irgendwie)*/
-
     @Override
     public void onMapReady(final GoogleMap googleMap)
     {
@@ -222,8 +220,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker)
             {
-                Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
-                toast.show();
+                //Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
+                //toast.show();
                 marker.showInfoWindow();
 
                 //GoogleMap
@@ -241,13 +239,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        Intent startComment;
+        Intent showComment;
         String spotkey;
+        Spot currSpot;
+
+        currSpot = (Spot) marker.getTag();
         spotkey = marker.getSnippet();
-        startComment = new Intent(this.getApplicationContext(), ShowComments.class);
-        startComment.putExtra("key", spotkey);
+        showComment = new Intent(this.getApplicationContext(), ShowComments.class);
+
+
+        //Um DB Traffic zu sparen wird der jeweilige Spot "gebundlet" komplett übergeben!
+        Bundle b = new Bundle();
+        b = currSpot.toBundle();
+        showComment.putExtras(b);
+        //Key wird extra übergeben, weil er "eigentlich" nicht zum Spot Objekt gehört
+        showComment.putExtra("key", spotkey);
+        showComment.putExtra("currLocLatitude", (float) mCurrentLocation.getLatitude());
+        showComment.putExtra("currLocLongitude", (float) mCurrentLocation.getLongitude());
         //Toast.makeText(getApplicationContext(), spotkey, Toast.LENGTH_LONG).show();
-        startActivity(startComment);
+        startActivity(showComment);
     }
 
     @Override
@@ -377,7 +387,7 @@ public class MainActivity extends AppCompatActivity
     private void addNewDummySpot()
     {
         Spot dummy;
-        dummy = new Spot(1, (double) 48.5887, (double) 10.2058, "Giengen",
+        dummy = new Spot("yodawg", (double) 48.5887, (double) 10.2058, "Giengen",
                 "Hier liegt Giengen an der Brenz :)",
                 "https://upload.wikimedia.org/wikipedia/commons/1/11/Giengen_an_der_Brenz_001.jpg",
                 1511978087, "sleep", true);
