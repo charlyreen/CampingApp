@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -39,6 +41,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -89,6 +92,10 @@ public class MainActivity extends AppCompatActivity
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
 
+    /*Hier werden die Marker geladen*/
+    /*FIREBASE INTEGRATION*/
+    /*TODO: lade nur die Spots, die im aktuellen Sichtfeld zu sehen sind
+    (über longitude und latitude irgendwie)*/
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -141,11 +148,6 @@ public class MainActivity extends AppCompatActivity
         buildLocationSettingsRequest();
     }
 
-
-    /*Hier werden die Marker geladen*/
-    /*FIREBASE INTEGRATION*/
-    /*TODO: lade nur die Spots, die im aktuellen Sichtfeld zu sehen sind
-    (über longitude und latitude irgendwie)*/
     @Override
     public void onMapReady(final GoogleMap googleMap)
     {
@@ -220,9 +222,18 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker)
             {
-                //Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        "Something went wrong...", Toast.LENGTH_LONG);
                 //toast.show();
-                marker.showInfoWindow();
+                try
+                {
+                    marker.showInfoWindow();
+                }
+                catch(NullPointerException e)
+                {
+                    toast.show();
+                }
+
 
                 //GoogleMap
                 return false;
@@ -239,25 +250,32 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        Intent showComment;
-        String spotkey;
-        Spot currSpot;
+        Toast toast = Toast.makeText(getApplicationContext(), "Not a real spot!", Toast.LENGTH_LONG);
+        if(!marker.isDraggable())
+        {
+            Intent showComment;
+            String spotkey;
+            Spot currSpot;
 
-        currSpot = (Spot) marker.getTag();
-        spotkey = marker.getSnippet();
-        showComment = new Intent(this.getApplicationContext(), ShowComments.class);
+            currSpot = (Spot) marker.getTag();
+            spotkey = marker.getSnippet();
+            showComment = new Intent(this.getApplicationContext(), ShowComments.class);
 
 
-        //Um DB Traffic zu sparen wird der jeweilige Spot "gebundlet" komplett übergeben!
-        Bundle b = new Bundle();
-        b = currSpot.toBundle();
-        showComment.putExtras(b);
-        //Key wird extra übergeben, weil er "eigentlich" nicht zum Spot Objekt gehört
-        showComment.putExtra("key", spotkey);
-        showComment.putExtra("currLocLatitude", (float) mCurrentLocation.getLatitude());
-        showComment.putExtra("currLocLongitude", (float) mCurrentLocation.getLongitude());
-        //Toast.makeText(getApplicationContext(), spotkey, Toast.LENGTH_LONG).show();
-        startActivity(showComment);
+            //Um DB Traffic zu sparen wird der jeweilige Spot "gebundlet" komplett übergeben!
+            Bundle b = new Bundle();
+            b = currSpot.toBundle();
+            showComment.putExtras(b);
+            //Key wird extra übergeben, weil er "eigentlich" nicht zum Spot Objekt gehört
+            showComment.putExtra("key", spotkey);
+            showComment.putExtra("currLocLatitude", (float) mCurrentLocation.getLatitude());
+            showComment.putExtra("currLocLongitude", (float) mCurrentLocation.getLongitude());
+            //Toast.makeText(getApplicationContext(), spotkey, Toast.LENGTH_LONG).show();
+            startActivity(showComment);
+        }
+        else
+            toast.show();
+
     }
 
     @Override
@@ -317,11 +335,57 @@ public class MainActivity extends AppCompatActivity
         {
             drawer.closeDrawer(GravityCompat.START);
         }
-        else if (id == R.id.nav_slideshow)
+        else if (id == R.id.nav_add)
         {
             drawer.closeDrawer(GravityCompat.START);
+
+            //public Spot(String authorID_, double latitude_, double longitude_, String name_,
+            //    String description_, String pic_, long timestamp_, String type_, boolean visible_)
+            Spot dummy = new Spot("0",0,0,"New spot",
+                    "Drag me where you want the new spot to be!",
+                    "about:blank",00,"Soon to be spot",true);
+
+            //LatLng newMarkerSpawn = new LatLng(gMap.getCameraPosition().target);
+            Marker newMarkerMarker = gMap.addMarker(new MarkerOptions()
+                    .position(gMap.getCameraPosition().target)
+                    .title("Potentially new map marker")
+                    .draggable(true)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+            newMarkerMarker.setTag(dummy);
+
+
+
+
+
+            //Handling of the floating action Button
+            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View view)
+                {
+                    Snackbar.make(view, "Please fill out to add marker", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                    fab.setVisibility(View.GONE);
+                }
+            });
+
+            //Handling of the Snackbar
+            Snackbar.make(findViewById(R.id.map), "Click to cancel:", Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Cancel", new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            Snackbar.make(view, "Cancelled!", Snackbar.LENGTH_SHORT).show();
+                            fab.setVisibility(View.GONE);
+                        }
+                    })
+                    .show();
+
         }
-        else if (id == R.id.nav_manage)
+        else if (id == R.id.nav_howto)
         {
             drawer.closeDrawer(GravityCompat.START);
         }
@@ -380,7 +444,6 @@ public class MainActivity extends AppCompatActivity
                     value.setVisible(false);
             }
         }
-
         return true;
     }
 

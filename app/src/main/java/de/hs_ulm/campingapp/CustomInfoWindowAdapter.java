@@ -52,7 +52,7 @@ public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter
         ImageView image = (ImageView) view.findViewById(R.id.image);
         tvTitle.setText(location.getName());
         tvSubTitle.setText(location.getDescription());
-        tvType.setText("Art: " + location.getType());
+        tvType.setText("Type: " + location.getType());
 
 
 
