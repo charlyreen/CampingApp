@@ -133,12 +133,12 @@ public class MainActivity extends AppCompatActivity
 
         //mAuth = FirebaseAuth.getInstance();
 
-        //Googlebutton.setOnClickListener(new View.OnClickListener() {
-        //   @Override
-        //   public void onClick(View view) {
-        //      signIn();
-        //  }
-   // });
+        Googlebutton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+              signIn();
+          }
+           });
     // Configure Google Sign In
 
 
