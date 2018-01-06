@@ -37,6 +37,13 @@
         android:layout_weight="1"
         android:text="comment" />
 
+    <TextView
+        android:id="@+id/commentTXTVdate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="10sp" />
+
     <View
         android:id="@+id/commentLine"
         android:layout_width="match_parent"

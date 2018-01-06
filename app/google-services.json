@@ -15,11 +15,63 @@
       },
       "oauth_client": [
         {
+          "client_id": "288100422679-da5q4t8vu0faak5qd31r2761kr3ufj0v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.hs_ulm.campingapp",
+            "certificate_hash": "166943c979baca5d8fd1b438fad5eb1b2ea20833"
+          }
+        },
+        {
           "client_id": "288100422679-fua9i1bvgb45lua4fds7hpi0i46jvfdn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "de.hs_ulm.campingapp",
             "certificate_hash": "f6e55fdc945d73042c55a74cc05dcfc4fa4c4320"
+          }
+        },
+        {
+          "client_id": "288100422679-2tn0k652ebvk32601soui3icmhubahh1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgWAqcs6_tidDucLADKA4-c8CFD8ZCIbo"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "288100422679-2tn0k652ebvk32601soui3icmhubahh1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:288100422679:android:8a7d67f0b97d1184",
+        "android_client_info": {
+          "package_name": "com.example.daniel.firebase_googlesignin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "288100422679-i1ej4oh19vrk2l88da064lsgu9d18lbe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.daniel.firebase_googlesignin",
+            "certificate_hash": "166943c979baca5d8fd1b438fad5eb1b2ea20833"
           }
         },
         {

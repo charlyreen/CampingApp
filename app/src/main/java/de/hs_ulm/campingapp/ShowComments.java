@@ -1,10 +1,17 @@
 package de.hs_ulm.campingapp;
 
+import android.content.ClipData;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.location.Location;
+import android.media.Image;
 import android.media.Rating;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -30,6 +37,10 @@ public class ShowComments extends AppCompatActivity {
     TextView mTitle;
     TextView mDescr;
     RatingBar mCommRating;
+    FloatingActionButton mCommNewComment;
+    TextView mDistance;
+    TextView mType;
+    ImageView mSpotPic;
     float spotRating = 0;
     private int commCounter;
 
@@ -45,12 +56,35 @@ public class ShowComments extends AppCompatActivity {
         mTitle = (TextView) findViewById(R.id.commTitle);
         mDescr = (TextView) findViewById(R.id.commDescr);
         mCommRating = (RatingBar) findViewById(R.id.commRating);
+        mCommNewComment = (FloatingActionButton) findViewById(R.id.commNewComment);
+        mDistance = (TextView) findViewById(R.id.commDistance);
+        mType = (TextView) findViewById(R.id.commType);
+        mSpotPic = (ImageView) findViewById(R.id.spotPic);
 
-        //get Intent
+        //get Intent: Spot data + spotKey!
         Bundle extras = getIntent().getExtras();
         String spotkey = extras.getString("key");
+        Spot thisSpot = new Spot(extras);
+        //get Intent: current GPS Location currloc
+        Location mCurrentLocation = new Location("currentLocation");
+        mCurrentLocation.setLatitude(extras.getFloat("currLocLatitude"));
+        mCurrentLocation.setLongitude(extras.getFloat("currLocLongitude"));
 
-        Query queryFiltered = mRootRef.child("comments").child(spotkey).limitToLast(10);
+        //onClick Floating Button-> Make new Comment Activity
+        final Intent makeNewComment;
+        makeNewComment = new Intent(this.getApplicationContext(), MakeNewComment.class);
+            //extras = getIntent().getExtras() -> no need to be bundled again!
+        makeNewComment.putExtras(extras);
+        mCommNewComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(makeNewComment);
+            }
+        });
+
+        //Get Comments from DB (limited to last 10)
+        int loadMoreLimit = 3; //only x entry shall be loaded, then another 10 if you scroll down and so on...
+        Query queryFiltered = mRootRef.child("comments").child(spotkey).orderByKey();
         FirebaseListOptions<SpotComment> options = new FirebaseListOptions.Builder<SpotComment>()
                 .setQuery(queryFiltered, SpotComment.class)
                 .setLayout(R.layout.layout_commentlist)
@@ -65,51 +99,47 @@ public class ShowComments extends AppCompatActivity {
                         .setRating((float) model.getRating());
                 ((TextView) v.findViewById(R.id.commentTXTVcomment))
                         .setText(model.getText());
+                ((TextView) v.findViewById(R.id.commentTXTVdate))
+                        .setText(model.getDate());
                 spotRating += model.getRating();
+            }
+            @Override
+            public SpotComment getItem(int position) {
+                //Hack to show items in descending order
+                return super.getItem(getCount() - 1 - position);
             }
 
         };
 
         //Attach Adapter to ListView
+
         mListComments.setAdapter(listAdapter);
 
-        //get Location, set Title
-        mRootRef.child("spots").child(spotkey).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Spot location;
-                location = dataSnapshot.getValue(Spot.class);
-                mTitle.setText(location.getName());
-                mDescr.setText(location.getDescription());
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
+        //set Title, Description of Location from Intent Extra Spot Object
+        mTitle.setText(thisSpot.getName());
+        mDescr.setText(thisSpot.getDescription());
+        mDistance.setText(thisSpot.getDistanceToInKM(mCurrentLocation) + " " +getString(R.string.showComments_distance));
+        mType.setText(thisSpot.getType());
+        //Download Image in Background -> UI doesnt freeze meeeen
+        new DownloadImageTask(mSpotPic).execute(thisSpot.getPic());
     }
     @Override
     protected void onStart() {
         super.onStart();
         listAdapter.startListening();
         //Delay wird gebraucht um ListView erstmal zu laden
-        //Hier: Gesamtrating
+        //Hier: Gesamtrating  berechnen
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
                 commCounter = mListComments.getAdapter().getCount();
                 spotRating = spotRating/2;
                 spotRating = spotRating/commCounter;
+                //set gesamtrating in textview
                 mCommRating.setRating(spotRating);
-                Toast.makeText(getApplicationContext(), Float.toString(spotRating), Toast.LENGTH_LONG).show();
             }
         }, 500);
-
-        //Set Gesamtrating
 
 
     }
@@ -118,5 +148,4 @@ public class ShowComments extends AppCompatActivity {
         super.onStop();
         listAdapter.stopListening();
     }
-
 }

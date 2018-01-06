@@ -30,13 +30,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/loginButton"
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/GoogleloginButton"
             android:layout_width="60dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="@color/common_google_signin_btn_tint"
-            android:text="Login via Google" />
+
+            />
     </LinearLayout>
 
     <TextView

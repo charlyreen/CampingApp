@@ -1,13 +1,10 @@
 package de.hs_ulm.campingapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Location;
 import android.net.Uri;
-import android.nfc.Tag;
 import android.os.Bundle;
 
 import android.os.Looper;
@@ -23,12 +20,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -43,25 +45,23 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.Dot;
-import com.google.android.gms.maps.model.Gap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -91,15 +91,20 @@ public class MainActivity extends AppCompatActivity
     private Location mCurrentLocation;
     private Boolean mRequestingLocationUpdates;
     private String mLastUpdateTime;
-    private boolean mWasActive = false;
+    private Boolean mWasActive = false;
 
     private GoogleMap gMap;
     private HashMap<Spot, Marker> markers = new HashMap<Spot, Marker>();
 
+    private SignInButton Googlebutton;
+    FirebaseAuth mAuth;
+    private final static int RC_SIGN_IN = 2;
+    //GoogleApiClient mGoogleApiClient;
+    GoogleSignInClient mGoogleSignInClient;
+
 
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
-    String lastClickedSpotKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -110,6 +115,45 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         //get Firebase Ref
         mRootRef = FirebaseDatabase.getInstance().getReference();
+
+
+
+        //////////////////////////////////////Google Login Process//////////////////////////////////
+
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+
+
+        //mAuth = FirebaseAuth.getInstance();
+
+        //Googlebutton.setOnClickListener(new View.OnClickListener() {
+        //   @Override
+        //   public void onClick(View view) {
+        //      signIn();
+        //  }
+   // });
+    // Configure Google Sign In
+
+
+
+    //findViewById(R.id.GoogleloginButton).setOnClickListener(this);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        //updateUI(account);
+
+
+
+
+
+
+
+
 
         //myLocation.setVisible(false);
 
@@ -151,14 +195,80 @@ public class MainActivity extends AppCompatActivity
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
+
+
+
+
     }
+
+
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+     /*
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+                // ...
+            }
+        }
+
+
+    }
+    */
+    /*
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            //updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            //Snackbar.make(findViewById(R.id.activity_main), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            //updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
+    }
+    */
+
+    //@Override
+    //public void onStart() {
+        // Check for existing Google Sign In account, if the user is already signed in
+        // the GoogleSignInAccount will be non-null.
+        //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        //updateUI(account);
+
+    //}
+
 
 
     /*Hier werden die Marker geladen*/
     /*FIREBASE INTEGRATION*/
     /*TODO: lade nur die Spots, die im aktuellen Sichtfeld zu sehen sind
     (über longitude und latitude irgendwie)*/
-
     @Override
     public void onMapReady(final GoogleMap googleMap)
     {
@@ -233,8 +343,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker)
             {
-                Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
-                toast.show();
+                //Toast toast = Toast.makeText(getApplicationContext(), "okokok", Toast.LENGTH_LONG);
+                //toast.show();
                 marker.showInfoWindow();
 
                 //GoogleMap
@@ -247,18 +357,41 @@ public class MainActivity extends AppCompatActivity
         gMap = googleMap;
         //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(test, 12));
 
+
+
+
+        Googlebutton = (SignInButton) findViewById(R.id.GoogleloginButton);
+
+        Googlebutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signIn();
+            }
+        });
     }
 
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        Intent startComment;
+        Intent showComment;
         String spotkey;
+        Spot currSpot;
+
+        currSpot = (Spot) marker.getTag();
         spotkey = marker.getSnippet();
-        startComment = new Intent(this.getApplicationContext(), ShowComments.class);
-        startComment.putExtra("key", spotkey);
+        showComment = new Intent(this.getApplicationContext(), ShowComments.class);
+
+
+        //Um DB Traffic zu sparen wird der jeweilige Spot "gebundlet" komplett übergeben!
+        Bundle b = new Bundle();
+        b = currSpot.toBundle();
+        showComment.putExtras(b);
+        //Key wird extra übergeben, weil er "eigentlich" nicht zum Spot Objekt gehört
+        showComment.putExtra("key", spotkey);
+        showComment.putExtra("currLocLatitude", (float) mCurrentLocation.getLatitude());
+        showComment.putExtra("currLocLongitude", (float) mCurrentLocation.getLongitude());
         //Toast.makeText(getApplicationContext(), spotkey, Toast.LENGTH_LONG).show();
-        startActivity(startComment);
+        startActivity(showComment);
     }
 
     @Override
@@ -335,7 +468,7 @@ public class MainActivity extends AppCompatActivity
                 entry.getValue().setVisible(true);
             }
         }
-        else if (id == R.id.nav_filt_schlafpl)
+        else if (id == R.id.nav_filt_sleep)
         {
             //Toast.makeText(getApplicationContext(), "testeroni" , Toast.LENGTH_LONG).show();
             //drawer.openDrawer(GravityCompat.START);
@@ -388,7 +521,7 @@ public class MainActivity extends AppCompatActivity
     private void addNewDummySpot()
     {
         Spot dummy;
-        dummy = new Spot(1, (double) 48.5887, (double) 10.2058, "Giengen",
+        dummy = new Spot("yodawg", (double) 48.5887, (double) 10.2058, "Giengen",
                 "Hier liegt Giengen an der Brenz :)",
                 "https://upload.wikimedia.org/wikipedia/commons/1/11/Giengen_an_der_Brenz_001.jpg",
                 1511978087, "sleep", true);
@@ -471,12 +604,13 @@ public class MainActivity extends AppCompatActivity
                 gMap.animateCamera(CameraUpdateFactory
                         .newLatLngZoom(new LatLng(mCurrentLocation.getLatitude(),
                                 mCurrentLocation.getLongitude()), 15));
+                gMap.getUiSettings().setMyLocationButtonEnabled(true);
             }
 
         }
         else
         {
-            gMap.setMyLocationEnabled(false);
+            //gMap.setMyLocationEnabled(false);
             mWasActive = false;
         }
     }
@@ -507,20 +641,26 @@ public class MainActivity extends AppCompatActivity
                         //updateUI();
                     }
                 })
-                .addOnFailureListener(this, new OnFailureListener() {
+                .addOnFailureListener(this, new OnFailureListener()
+                {
                     @Override
-                    public void onFailure(@NonNull Exception e) {
+                    public void onFailure(@NonNull Exception e)
+                    {
                         int statusCode = ((ApiException) e).getStatusCode();
-                        switch (statusCode) {
+                        switch (statusCode)
+                        {
                             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                                 Log.i(TAG, "Location settings are not satisfied. Attempting to upgrade " +
                                         "location settings ");
-                                try {
+                                try
+                                {
                                     // Show the dialog by calling startResolutionForResult(), and check the
                                     // result in onActivityResult().
                                     ResolvableApiException rae = (ResolvableApiException) e;
                                     rae.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
-                                } catch (IntentSender.SendIntentException sie) {
+                                }
+                                catch (IntentSender.SendIntentException sie)
+                                {
                                     Log.i(TAG, "PendingIntent unable to execute request.");
                                 }
                                 break;
@@ -561,13 +701,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         // Within {@code onPause()}, we remove location updates. Here, we resume receiving
         // location updates if the user has requested them.
-        if (mRequestingLocationUpdates && checkPermissions()) {
+        if (mRequestingLocationUpdates && checkPermissions())
+        {
             startLocationUpdates();
-        } else if (!checkPermissions()) {
+        }
+        else if (!checkPermissions())
+        {
             requestPermissions();
         }
 
@@ -575,11 +719,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
         super.onPause();
 
         // Remove location updates to save battery.
         stopLocationUpdates();
+
     }
 
     public void onSaveInstanceState(Bundle savedInstanceState)
@@ -591,7 +737,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showSnackbar(final int mainTextStringId, final int actionStringId,
-                              View.OnClickListener listener) {
+                              View.OnClickListener listener)
+    {
         Snackbar.make(
                 findViewById(android.R.id.content),
                 getString(mainTextStringId),
@@ -599,13 +746,15 @@ public class MainActivity extends AppCompatActivity
                 .setAction(getString(actionStringId), listener).show();
     }
 
-    private boolean checkPermissions() {
+    private boolean checkPermissions()
+    {
         int permissionState = ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION);
         return permissionState == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void requestPermissions() {
+    private void requestPermissions()
+    {
         boolean shouldProvideRationale =
                 ActivityCompat.shouldShowRequestPermissionRationale(this,
                         android.Manifest.permission.ACCESS_FINE_LOCATION);
@@ -615,16 +764,20 @@ public class MainActivity extends AppCompatActivity
         if (shouldProvideRationale) {
             Log.i(TAG, "Displaying permission rationale to provide additional context.");
             showSnackbar(R.string.permission_rationale,
-                    android.R.string.ok, new View.OnClickListener() {
+                    android.R.string.ok, new View.OnClickListener()
+                    {
                         @Override
-                        public void onClick(View view) {
+                        public void onClick(View view)
+                        {
                             // Request permission
                             ActivityCompat.requestPermissions(MainActivity.this,
                                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                                     REQUEST_PERMISSIONS_REQUEST_CODE);
                         }
                     });
-        } else {
+        }
+        else
+        {
             Log.i(TAG, "Requesting permission");
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
@@ -635,22 +788,30 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults)
     {
         Log.i(TAG, "onRequestPermissionResult");
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.length <= 0) {
+        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE)
+        {
+            if (grantResults.length <= 0)
+            {
                 // If user interaction was interrupted, the permission request is cancelled and you
                 // receive empty arrays.
                 Log.i(TAG, "User interaction was cancelled.");
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                if (mRequestingLocationUpdates) {
+            }
+            else if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
+            {
+                if (mRequestingLocationUpdates)
+                {
                     Log.i(TAG, "Permission granted, updates requested, starting location updates");
                     startLocationUpdates();
                 }
-            } else {
+            }
+            else
+            {
                 // Permission denied.
 
                 // Notify the user via a SnackBar that they have rejected a core permission for the
@@ -663,9 +824,11 @@ public class MainActivity extends AppCompatActivity
                 // when permissions are denied. Otherwise, your app could appear unresponsive to
                 // touches or interactions which have required permissions.
                 showSnackbar(R.string.permission_denied_explanation,
-                        R.string.settings, new View.OnClickListener() {
+                        R.string.settings, new View.OnClickListener()
+                        {
                             @Override
-                            public void onClick(View view) {
+                            public void onClick(View view)
+                            {
                                 // Build intent that displays the App settings screen.
                                 Intent intent = new Intent();
                                 intent.setAction(
