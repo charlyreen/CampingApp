@@ -87,7 +87,10 @@ public class MainActivity extends AppCompatActivity
 
     private GoogleMap gMap;
     private HashMap<Spot, Marker> markers = new HashMap<Spot, Marker>();
+    private Marker newMarkerMarker;
+    private static final int ADD_NEW_MARKER_INTENT = 100;
 
+    private String userID = "01";
 
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
@@ -146,6 +149,7 @@ public class MainActivity extends AppCompatActivity
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
+
     }
 
     @Override
@@ -245,6 +249,33 @@ public class MainActivity extends AppCompatActivity
         gMap = googleMap;
         //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(test, 12));
 
+
+        //OnDragListener for when one moves the draggable Marker to create a new Spot,
+        //the Position of said marker has to be noticed and put into him again
+        gMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker arg0)
+            {
+                Log.d("System out", "onMarkerDragStart..."+arg0.getPosition()
+                        .latitude+"..."+arg0.getPosition().longitude);
+            }
+
+            @SuppressWarnings("unchecked")
+            @Override
+            public void onMarkerDragEnd(Marker arg0)
+            {
+                Log.d("System out", "onMarkerDragEnd..."+arg0.getPosition()
+                        .latitude+"..."+arg0.getPosition().longitude);
+                gMap.animateCamera(CameraUpdateFactory.newLatLng(arg0.getPosition()));
+                newMarkerMarker.setPosition(arg0.getPosition());
+            }
+
+            @Override
+            public void onMarkerDrag(Marker arg0)
+            {
+                Log.i("System out", "onMarkerDrag...");
+            }
+        });
     }
 
     @Override
@@ -335,7 +366,7 @@ public class MainActivity extends AppCompatActivity
         {
             drawer.closeDrawer(GravityCompat.START);
         }
-        else if (id == R.id.nav_add)
+        else if (id == R.id.nav_add) //Adding a new Marker
         {
             drawer.closeDrawer(GravityCompat.START);
 
@@ -346,15 +377,23 @@ public class MainActivity extends AppCompatActivity
                     "about:blank",00,"Soon to be spot",true);
 
             //LatLng newMarkerSpawn = new LatLng(gMap.getCameraPosition().target);
-            Marker newMarkerMarker = gMap.addMarker(new MarkerOptions()
+            try
+            {
+                newMarkerMarker.remove();
+            }
+            catch(NullPointerException e)
+            {
+                Toast.makeText(getApplicationContext(), "Add new Marker!" , Toast.LENGTH_LONG)
+                        .show();
+            }
+
+            newMarkerMarker = gMap.addMarker(new MarkerOptions()
                     .position(gMap.getCameraPosition().target)
                     .title("Potentially new map marker")
                     .draggable(true)
+                    .zIndex(1.0f)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
             newMarkerMarker.setTag(dummy);
-
-
-
 
 
             //Handling of the floating action Button
@@ -368,6 +407,16 @@ public class MainActivity extends AppCompatActivity
                     Snackbar.make(view, "Please fill out to add marker", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                     fab.setVisibility(View.GONE);
+
+
+                    Intent addSpot = new Intent(getApplicationContext(), AddSpot.class);
+                    addSpot.putExtra("position", newMarkerMarker.getPosition());
+                    addSpot.putExtra("author", userID);
+                    // Set the request code to any code you like, you can
+                    // identify the callback via this code
+                    startActivityForResult(addSpot, ADD_NEW_MARKER_INTENT);
+
+                    newMarkerMarker.remove();
                 }
             });
 
@@ -380,16 +429,17 @@ public class MainActivity extends AppCompatActivity
                         {
                             Snackbar.make(view, "Cancelled!", Snackbar.LENGTH_SHORT).show();
                             fab.setVisibility(View.GONE);
+                            newMarkerMarker.remove();
                         }
                     })
                     .show();
 
         }
-        else if (id == R.id.nav_howto)
+        else if (id == R.id.nav_howto) //Opening the How-To of this App
         {
             drawer.closeDrawer(GravityCompat.START);
         }
-        else if (id == R.id.nav_filt_none)
+        else if (id == R.id.nav_filt_none) //No Filters
         {
             Toast.makeText(getApplicationContext(), "testeroni" , Toast.LENGTH_LONG).show();
             //drawer.openDrawer(GravityCompat.START);
@@ -398,7 +448,7 @@ public class MainActivity extends AppCompatActivity
                 entry.getValue().setVisible(true);
             }
         }
-        else if (id == R.id.nav_filt_sleep)
+        else if (id == R.id.nav_filt_sleep) //Filter for places to sleep
         {
             //Toast.makeText(getApplicationContext(), "testeroni" , Toast.LENGTH_LONG).show();
             //drawer.openDrawer(GravityCompat.START);
@@ -411,12 +461,9 @@ public class MainActivity extends AppCompatActivity
                         value.setVisible(true);
                     else
                         value.setVisible(false);
-                    //Toast.makeText(getApplicationContext(), key.getType()
-                    //        + "\n" + key.getName() + "\n"
-                    //        + value.getTitle(), Toast.LENGTH_SHORT).show();
             }
         }
-        else if (id == R.id.nav_filt_scene)
+        else if (id == R.id.nav_filt_scene) //Filter for scenic places
         {
             //drawer.openDrawer(GravityCompat.START);
             for (Map.Entry<Spot,Marker> entry : markers.entrySet())
@@ -430,7 +477,7 @@ public class MainActivity extends AppCompatActivity
                     value.setVisible(false);
             }
         }
-        else if (id == R.id.nav_filt_action)
+        else if (id == R.id.nav_filt_action) //Filter for places where you can expect some action
         {
             //drawer.openDrawer(GravityCompat.START);
             for (Map.Entry<Spot,Marker> entry : markers.entrySet())
@@ -446,6 +493,24 @@ public class MainActivity extends AppCompatActivity
         }
         return true;
     }
+
+    //@Override
+    //protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    //{
+    //    // Check which request we're responding to
+    //    if (requestCode == ADD_NEW_MARKER_INTENT)
+    //    {
+    //        // Make sure the request was successful
+    //        if (resultCode == RESULT_OK)
+    //        {
+    //
+    //        }
+    //        else
+    //        {
+    //
+    //        }
+    //    }
+    //}
 
     private void addNewDummySpot()
     {
