@@ -20,6 +20,12 @@
 
     <string name="showComments_distance">von dir entfernt</string>
 
+    <string-array name="Filters">
+        <item>@string/filter_sleep</item>
+        <item>@string/filter_scene</item>
+        <item>@string/filter_action</item>
+    </string-array>
+
     <string name="makeNewComments_yourRating">Deine Bewertung für diesen Spot:</string>
     <string name="makeNewComments_writeComment">Gib bitte eine kurzen Bewertung oder einen Kommentar zu diesem Spot ab:</string>
     <string name="makeNewComments_errorCommentLength">Fehler: Dein Kommentar ist zu kurz!</string>

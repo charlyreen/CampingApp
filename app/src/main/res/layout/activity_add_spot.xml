@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/addSpotTitle"
+        android:layout_width="262dp"
+        android:layout_height="47dp"
+        android:layout_marginEnd="61dp"
+        android:layout_marginStart="61dp"
+        android:text="Add new spot"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/addSpotNameTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Name of the spot:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotTitle" />
+
+    <EditText
+        android:id="@+id/addSpotName"
+        android:layout_width="350dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:ems="10"
+        android:hint="Insert name here"
+        android:inputType="textMultiLine"
+        android:selectAllOnFocus="false"
+        android:singleLine="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotNameTitle" />
+
+    <TextView
+        android:id="@+id/addSpotDescriptionTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Description of Spot:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotName" />
+
+    <EditText
+        android:id="@+id/addSpotDescription"
+        android:layout_width="350dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:ems="10"
+        android:hint="Insert description here"
+        android:inputType="textMultiLine"
+        android:selectAllOnFocus="false"
+        android:singleLine="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotDescriptionTitle" />
+
+    <TextView
+        android:id="@+id/addSpotTypeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Type of Spot:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotDescription" />
+
+    <Spinner
+        android:id="@+id/addSpotSpinnerType"
+        android:layout_width="350dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="16dp"
+        android:entries="@array/Filters"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotTypeTitle" />
+
+    <TextView
+        android:id="@+id/addSpotPictureTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Picture of Spot (Insert URL):"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotSpinnerType" />
+
+    <EditText
+        android:id="@+id/addSpotPicture"
+        android:layout_width="350dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:ems="10"
+        android:hint="Insert URL of picture here"
+        android:inputType="textMultiLine"
+        android:selectAllOnFocus="false"
+        android:singleLine="false"
+        android:text="about:blank"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotPictureTitle" />
+
+    <Button
+        android:id="@+id/addSpotButtonOK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="64dp"
+        android:text="Create"
+        android:onClick="oukay"
+        android:textAppearance="@style/TextAppearance.AppCompat.Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/addSpotButtonCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="64dp"
+        android:text="Cancel"
+        android:onClick="cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

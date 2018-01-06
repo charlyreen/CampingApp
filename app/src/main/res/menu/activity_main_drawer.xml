@@ -13,15 +13,15 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Gallery" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_add"
             android:checkable="false"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:icon="@drawable/ic_menu_send"
+            android:title="Add Marker" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_howto"
             android:checkable="false"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="Manual" />
     </group>
 
     <item android:title="Filter">
