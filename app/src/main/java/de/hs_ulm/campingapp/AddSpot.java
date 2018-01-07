@@ -58,6 +58,7 @@ public class AddSpot extends AppCompatActivity
         Long tsLong = System.currentTimeMillis()/1000;
 
         Spot newSpot;
+
         newSpot = new Spot(author, markerPosition.latitude,
                 markerPosition.longitude, name.getText().toString(),
                 description.getText().toString(), picture.getText().toString(), tsLong,

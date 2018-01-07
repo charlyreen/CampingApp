@@ -72,6 +72,8 @@ public class Spot {
     {
         return pic;
     }
+    public boolean isVisible() { return visible; }
+    public long getTimestamp() { return timestamp; }
     public Bundle toBundle() {
         Bundle b = new Bundle();
         b.putString("authorID", authorID);
