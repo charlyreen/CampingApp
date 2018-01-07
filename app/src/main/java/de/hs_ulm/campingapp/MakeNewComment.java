@@ -55,7 +55,7 @@ public class MakeNewComment extends AppCompatActivity {
                 userkey = "admin";
                 spotcom = new SpotComment(userkey, rating, newComment);
                 //Abfrage ob der Kommentar eine Mindestanzahl an Zeichen hat:
-                if(newComment.length() < 50)
+                if(newComment.length() < 4)
                 {
                     Toast.makeText(getApplicationContext(), R.string.makeNewComments_errorCommentLength, Toast.LENGTH_LONG).show();
                 }
