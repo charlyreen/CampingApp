@@ -40,7 +40,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".ShowComments" />
+        <activity android:name=".ShowComments"></activity>
         <activity android:name=".MakeNewComment"></activity>
         <activity android:name=".AddSpot"></activity>
         <activity android:name=".GoogleSignInActivity"></activity>
