@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
     private FusedLocationProviderClient mFusedLocationClient;
     private final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
     private final static String KEY_LOCATION = "location";
@@ -95,12 +96,13 @@ public class MainActivity extends AppCompatActivity
 
     private GoogleMap gMap;
     private HashMap<Spot, Marker> markers = new HashMap<Spot, Marker>();
-
+    private static final int RC_SIGN_IN = 12322;
     private SignInButton Googlebutton;
     FirebaseAuth mAuth;
-    private final static int RC_SIGN_IN = 2;
+
     //GoogleApiClient mGoogleApiClient;
     GoogleSignInClient mGoogleSignInClient;
+    GoogleSignInAccount accnt;
 
 
     /*Firebase Data Reference*/
@@ -120,31 +122,23 @@ public class MainActivity extends AppCompatActivity
 
         //////////////////////////////////////Google Login Process//////////////////////////////////
 
-
+        // Configure sign-in to request the user's ID, email address, and basic
+        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
         // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
 
 
 
-        //mAuth = FirebaseAuth.getInstance();
-
-        Googlebutton.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View view) {
-              signIn();
-          }
-           });
-    // Configure Google Sign In
+        mAuth = FirebaseAuth.getInstance();
 
 
-
-    //findViewById(R.id.GoogleloginButton).setOnClickListener(this);
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+         //findViewById(R.id.google_sign_in).setOnClickListener((View.OnClickListener) this);
+       // GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         //updateUI(account);
 
 
@@ -206,28 +200,47 @@ public class MainActivity extends AppCompatActivity
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-     /*
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
+
+            Toast.makeText(getApplicationContext(), "request code good" , Toast.LENGTH_LONG).show();
+
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
+                //Log.w(TAG, "trying", e);
+
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
+
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
+                Log.w(TAG, "Google sign in nicht gut", e);
+                Toast.makeText(getApplicationContext(), " Sign in failed" , Toast.LENGTH_LONG).show();
                 // ...
             }
         }
 
 
     }
-    */
-    /*
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            //updateUI(account);
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            //updateUI(null);
+        }
+    }
+
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
@@ -244,7 +257,7 @@ public class MainActivity extends AppCompatActivity
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            //Snackbar.make(findViewById(R.id.activity_main), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            //Snackbar.make(findViewById(R.id.MainActivity), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                             //updateUI(null);
                         }
 
@@ -252,7 +265,6 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
     }
-    */
 
     //@Override
     //public void onStart() {
@@ -360,14 +372,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
-        Googlebutton = (SignInButton) findViewById(R.id.GoogleloginButton);
 
-        Googlebutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signIn();
-            }
-        });
     }
 
     @Override
@@ -443,8 +448,12 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
 
 
-        if (id == R.id.nav_camera)
+        if (id == R.id.google_sign_in)
         {
+            Toast.makeText(getApplicationContext(), "Start Sign In " , Toast.LENGTH_LONG).show();
+            signIn();
+           //Intent doit = new Intent(MainActivity.this, GoogleSignInActivity.class);
+            //startActivity(doit);
             drawer.closeDrawer(GravityCompat.START);
         }
         else if (id == R.id.nav_gallery)
@@ -517,6 +526,8 @@ public class MainActivity extends AppCompatActivity
 
         return true;
     }
+
+
 
     private void addNewDummySpot()
     {

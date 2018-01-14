@@ -3,10 +3,10 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/google_sign_in"
             android:checkable="false"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="@string/common_signin_button_text_long" />
         <item
             android:id="@+id/nav_gallery"
             android:checkable="false"

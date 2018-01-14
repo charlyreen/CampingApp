@@ -41,7 +41,8 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".ShowComments" />
-        <activity android:name=".MakeNewComment"></activity>
+        <activity android:name=".MakeNewComment" />
+        <activity android:name=".GoogleSignInActivity"></activity>
     </application>
 
 </manifest>
