@@ -195,11 +195,13 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-
+    /*
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -227,6 +229,8 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+
+
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
@@ -265,7 +269,7 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
     }
-
+/*
     //@Override
     //public void onStart() {
         // Check for existing Google Sign In account, if the user is already signed in
@@ -450,10 +454,10 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.google_sign_in)
         {
-            Toast.makeText(getApplicationContext(), "Start Sign In " , Toast.LENGTH_LONG).show();
-            signIn();
-           //Intent doit = new Intent(MainActivity.this, GoogleSignInActivity.class);
-            //startActivity(doit);
+
+            //signIn();
+            Intent doit = new Intent(MainActivity.this, GoogleSignInActivity.class);
+            startActivity(doit);
             drawer.closeDrawer(GravityCompat.START);
         }
         else if (id == R.id.nav_gallery)
