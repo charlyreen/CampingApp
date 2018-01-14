@@ -43,6 +43,7 @@
         <activity android:name=".ShowComments" />
         <activity android:name=".MakeNewComment"></activity>
         <activity android:name=".AddSpot"></activity>
+        <activity android:name=".GoogleSignInActivity"></activity>
     </application>
 
 </manifest>
