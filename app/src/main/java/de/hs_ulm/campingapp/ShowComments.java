@@ -13,6 +13,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -141,7 +142,15 @@ public class ShowComments extends AppCompatActivity {
 
         //Attach Adapter to ListView
         mListComments.setAdapter(listAdapter);
-        //Switch UIDs to UserNames
+        //Delete own Comments:
+        mListComments.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //Dialog: delete?
+                Toast.makeText(getApplicationContext(), "Delete This comment", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
 
 
 
@@ -153,6 +162,8 @@ public class ShowComments extends AppCompatActivity {
         //Download Image in Background -> UI doesnt freeze meeeen
         new DownloadImageTask(mSpotPic).execute(thisSpot.getPic());
     }
+
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -171,22 +182,6 @@ public class ShowComments extends AppCompatActivity {
         }, 500);
 
 
-    }
-
-    private Task<User> getUserFromDB(String uid) {
-        final TaskCompletionSource<User> tcs = new TaskCompletionSource();
-        mRootRef.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                tcs.setResult(dataSnapshot.getValue(User.class));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-        return tcs.getTask();
     }
     @Override
     protected void onStop() {
