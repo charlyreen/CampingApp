@@ -56,8 +56,8 @@ public class MakeNewComment extends AppCompatActivity {
                 int rating;
                 newComment = mNewCommComment.getText().toString();
                 rating = (int) mNewCommRatingBar.getRating();
-                //TODO: userkey von firebase auth
-                userkey = "admin";
+
+                userkey = mAuth.getCurrentUser().getUid();
                 spotcom = new SpotComment(userkey, rating, newComment);
                 //Abfrage ob der Kommentar eine Mindestanzahl an Zeichen hat:
                 if(newComment.length() < 4)

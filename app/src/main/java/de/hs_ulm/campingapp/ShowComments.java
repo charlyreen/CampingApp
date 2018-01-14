@@ -7,6 +7,8 @@ import android.location.Location;
 import android.media.Image;
 import android.media.Rating;
 import android.os.Handler;
+import android.renderscript.Sampler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +21,9 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +48,10 @@ public class ShowComments extends AppCompatActivity {
     ImageView mSpotPic;
     float spotRating = 0;
     private int commCounter;
+
+    class viewWorkAround {
+        View v;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +102,27 @@ public class ShowComments extends AppCompatActivity {
             @Override
             protected void populateView(View v, SpotComment model, int position) {
                 //Populate Listview
+                /*Get DisplayName from Firebase Database User Node*/
+                final viewWorkAround vCpy = new viewWorkAround();
+                vCpy.v = v;
                 ((TextView) v.findViewById(R.id.commentTXTVAuthor))
-                        .setText("AuthorID: " + model.getUserkey());
+                        .setText(model.getUserkey());
+                mRootRef.child("users").child(model.getUserkey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if(dataSnapshot.exists()) {
+                            User dbUser = dataSnapshot.getValue(User.class);
+                            ((TextView) vCpy.v.findViewById(R.id.commentTXTVAuthor))
+                                    .setText(dbUser.getName());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
                 ((RatingBar) v.findViewById(R.id.commentRatingBar))
                         .setRating((float) model.getRating());
                 ((TextView) v.findViewById(R.id.commentTXTVcomment))
@@ -112,8 +140,9 @@ public class ShowComments extends AppCompatActivity {
         };
 
         //Attach Adapter to ListView
-
         mListComments.setAdapter(listAdapter);
+        //Switch UIDs to UserNames
+
 
 
         //set Title, Description of Location from Intent Extra Spot Object
@@ -142,6 +171,22 @@ public class ShowComments extends AppCompatActivity {
         }, 500);
 
 
+    }
+
+    private Task<User> getUserFromDB(String uid) {
+        final TaskCompletionSource<User> tcs = new TaskCompletionSource();
+        mRootRef.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                tcs.setResult(dataSnapshot.getValue(User.class));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        return tcs.getTask();
     }
     @Override
     protected void onStop() {

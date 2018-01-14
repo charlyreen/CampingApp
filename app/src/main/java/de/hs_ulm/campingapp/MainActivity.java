@@ -71,6 +71,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.w3c.dom.Text;
 
@@ -118,7 +119,6 @@ public class MainActivity extends AppCompatActivity
     //GoogleApiClient mGoogleApiClient;
     private GoogleSignInClient mGoogleSignInClient;
 
-    private String userID = "01";
 
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
@@ -205,8 +205,6 @@ public class MainActivity extends AppCompatActivity
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-
-
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -224,6 +222,8 @@ public class MainActivity extends AppCompatActivity
 
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
+                userToDB(mAuth.getCurrentUser());
+
 
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
@@ -232,6 +232,28 @@ public class MainActivity extends AppCompatActivity
                 // ...
                 updateUI();
             }
+        }
+    }
+    private void userToDB(FirebaseUser user) {
+        //Check if user is already in DB, if not then make new entry in users node
+        if (user != null) {
+            final String userEmail = user.getEmail();
+            final String userName = user.getDisplayName();
+            final String userUID = user.getUid();
+            mRootRef.child("users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.exists()) {
+                        User dbUser = new User(userEmail, userName);
+                        mRootRef.child("users").child(userUID).setValue(dbUser);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
     }
     private void signOut() {
@@ -510,7 +532,7 @@ public class MainActivity extends AppCompatActivity
 
         //public Spot(String authorID_, double latitude_, double longitude_, String name_,
         //    String description_, String pic_, long timestamp_, String type_, boolean visible_)
-        Spot dummy = new Spot("0",0,0,"New spot",
+        Spot dummy = new Spot(mAuth.getCurrentUser().getUid(),0,0,"New spot",
                 "Drag me where you want the new spot to be!",
                 "about:blank",00,"Soon to be spot",true);
 
@@ -549,7 +571,7 @@ public class MainActivity extends AppCompatActivity
 
                 Intent addSpot = new Intent(getApplicationContext(), AddSpot.class);
                 addSpot.putExtra("position", newMarkerMarker.getPosition());
-                addSpot.putExtra("author", userID);
+                addSpot.putExtra("author", mAuth.getCurrentUser().getUid());
                 // Set the request code to any code you like, you can
                 // identify the callback via this code
                 startActivityForResult(addSpot, ADD_NEW_MARKER_INTENT);
