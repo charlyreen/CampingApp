@@ -9,6 +9,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -19,12 +21,15 @@ public class MakeNewComment extends AppCompatActivity {
     FloatingActionButton mNewCommConfirm;
     EditText mNewCommComment;
     RatingBar mNewCommRatingBar;
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_new_comment);
         //get DB REF
         mRootRef = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
         //get UI Elements
         mNewCommTitle = (TextView) findViewById(R.id.newCommTitle);
         mNewCommDescr = (TextView) findViewById(R.id.newCommDescr);
@@ -68,6 +73,19 @@ public class MakeNewComment extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user != null) {
+            //Toast.makeText(getApplicationContext(), mAuth.getUid(), Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(getApplicationContext(), "not logged in", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
     @Override
     public void finish() {

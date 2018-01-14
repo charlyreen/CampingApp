@@ -42,6 +42,7 @@ public class AddSpot extends AppCompatActivity
 
     }
 
+
     public void oukay(View view)
     {
         DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();

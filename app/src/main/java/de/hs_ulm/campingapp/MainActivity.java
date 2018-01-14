@@ -28,8 +28,10 @@ import android.view.View;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -70,6 +72,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.w3c.dom.Text;
+
+import java.security.acl.Group;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -80,6 +85,8 @@ public class MainActivity extends AppCompatActivity
         GoogleMap.OnInfoWindowClickListener
 {
 
+    private NavigationView navigationView;
+    private DrawerLayout drawer;
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
@@ -106,18 +113,15 @@ public class MainActivity extends AppCompatActivity
     private Marker newMarkerMarker;
     private static final int ADD_NEW_MARKER_INTENT = 100;
     private static final int RC_SIGN_IN = 12322;
-    private SignInButton Googlebutton;
     FirebaseAuth mAuth;
 
     //GoogleApiClient mGoogleApiClient;
-    GoogleSignInClient mGoogleSignInClient;
-    GoogleSignInAccount accnt;
+    private GoogleSignInClient mGoogleSignInClient;
 
     private String userID = "01";
 
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
-    String lastClickedSpotKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -128,8 +132,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         //get Firebase Ref
         mRootRef = FirebaseDatabase.getInstance().getReference();
-
-
 
         //////////////////////////////////////Google Login Process//////////////////////////////////
 
@@ -143,18 +145,7 @@ public class MainActivity extends AppCompatActivity
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
 
-
-
         mAuth = FirebaseAuth.getInstance();
-
-
-         //findViewById(R.id.google_sign_in).setOnClickListener((View.OnClickListener) this);
-       // GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        //updateUI(account);
-
-
-
-
 
 
 
@@ -175,13 +166,13 @@ public class MainActivity extends AppCompatActivity
         //    }
         //});
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         /*Init GoogleMaps mapFragment, included in activity_main.xml through app_bar_main to activity_maps*/
@@ -205,11 +196,17 @@ public class MainActivity extends AppCompatActivity
 
 
     }
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateUI();
+    }
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+
+
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -233,11 +230,40 @@ public class MainActivity extends AppCompatActivity
                 Log.w(TAG, "Google sign in nicht gut", e);
                 Toast.makeText(getApplicationContext(), " Sign in failed" , Toast.LENGTH_LONG).show();
                 // ...
+                updateUI();
             }
         }
-
+    }
+    private void signOut() {
+        mAuth.signOut();
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                updateUI();
+            }
+        });
 
     }
+
+    private void updateUI() {
+        View nav_header_view = navigationView.getHeaderView(0);
+        TextView mtextViewUpper = (TextView) nav_header_view.findViewById(R.id.textViewUpper);
+
+        Menu menu = navigationView.getMenu();
+        MenuItem sign_in_out = menu.findItem(R.id.google_sign_in);
+
+        if(mAuth.getCurrentUser() != null) {
+            mtextViewUpper.setText(mAuth.getCurrentUser().getDisplayName());
+            sign_in_out.setTitle(getString(R.string.navDrawer_logout));
+        }
+        else {
+            mtextViewUpper.setText("Logged out");
+            sign_in_out.setTitle(getString(R.string.common_signin_button_text_long));
+
+        }
+
+    }
+
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
@@ -264,12 +290,12 @@ public class MainActivity extends AppCompatActivity
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            //updateUI(user);
+                            updateUI();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             //Snackbar.make(findViewById(R.id.MainActivity), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                            //updateUI(null);
+                            updateUI();
                         }
 
                         // ...
@@ -277,22 +303,10 @@ public class MainActivity extends AppCompatActivity
                 });
     }
 
-    //@Override
-    //public void onStart() {
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        //GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        //updateUI(account);
-
-    //}
-
-
-
     /*Hier werden die Marker geladen*/
     /*FIREBASE INTEGRATION*/
     /*TODO: lade nur die Spots, die im aktuellen Sichtfeld zu sehen sind
     (über longitude und latitude irgendwie)*/
-
     @Override
     public void onMapReady(final GoogleMap googleMap)
     {
@@ -453,7 +467,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START))
         {
             drawer.closeDrawer(GravityCompat.START);
@@ -468,6 +482,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         // Inflate the menu; this adds items to the action bar if it is present.
+
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -489,6 +504,74 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
+    private void addNewSpot() {
+        drawer.closeDrawer(GravityCompat.START);
+
+        //public Spot(String authorID_, double latitude_, double longitude_, String name_,
+        //    String description_, String pic_, long timestamp_, String type_, boolean visible_)
+        Spot dummy = new Spot("0",0,0,"New spot",
+                "Drag me where you want the new spot to be!",
+                "about:blank",00,"Soon to be spot",true);
+
+        //LatLng newMarkerSpawn = new LatLng(gMap.getCameraPosition().target);
+        try
+        {
+            newMarkerMarker.remove();
+        }
+        catch(NullPointerException e)
+        {
+            Toast.makeText(getApplicationContext(), "Add new Marker!" , Toast.LENGTH_LONG)
+                    .show();
+        }
+
+        newMarkerMarker = gMap.addMarker(new MarkerOptions()
+                .position(gMap.getCameraPosition().target)
+                .title("Potentially new map marker")
+                .draggable(true)
+                .zIndex(1.0f)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        newMarkerMarker.setTag(dummy);
+
+
+        //Handling of the floating action Button
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setVisibility(View.VISIBLE);
+        fab.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                Snackbar.make(view, "Please fill out to add marker", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                fab.setVisibility(View.GONE);
+
+
+                Intent addSpot = new Intent(getApplicationContext(), AddSpot.class);
+                addSpot.putExtra("position", newMarkerMarker.getPosition());
+                addSpot.putExtra("author", userID);
+                // Set the request code to any code you like, you can
+                // identify the callback via this code
+                startActivityForResult(addSpot, ADD_NEW_MARKER_INTENT);
+
+                newMarkerMarker.remove();
+            }
+        });
+
+        //Handling of the Snackbar
+        Snackbar.make(findViewById(R.id.map), "Click to cancel:", Snackbar.LENGTH_INDEFINITE)
+                .setAction("Cancel", new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View view)
+                    {
+                        Snackbar.make(view, "Cancelled!", Snackbar.LENGTH_SHORT).show();
+                        fab.setVisibility(View.GONE);
+                        newMarkerMarker.remove();
+                    }
+                })
+                .show();
+    }
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item)
@@ -501,10 +584,15 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.google_sign_in)
         {
-            Toast.makeText(getApplicationContext(), "Start Sign In " , Toast.LENGTH_LONG).show();
-            signIn();
-           //Intent doit = new Intent(MainActivity.this, GoogleSignInActivity.class);
-            //startActivity(doit);
+            FirebaseUser user = mAuth.getCurrentUser();
+            if(user == null) {
+                signIn();
+                Toast.makeText(getApplicationContext(), "Logged in " , Toast.LENGTH_LONG).show();
+            }
+            else {
+                signOut();
+                Toast.makeText(getApplicationContext(), "Logged out " , Toast.LENGTH_LONG).show();
+            }
             drawer.closeDrawer(GravityCompat.START);
         }
         else if (id == R.id.nav_gallery)
@@ -513,71 +601,13 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_add) //Adding a new Marker
         {
-            drawer.closeDrawer(GravityCompat.START);
-
-            //public Spot(String authorID_, double latitude_, double longitude_, String name_,
-            //    String description_, String pic_, long timestamp_, String type_, boolean visible_)
-            Spot dummy = new Spot("0",0,0,"New spot",
-                    "Drag me where you want the new spot to be!",
-                    "about:blank",00,"Soon to be spot",true);
-
-            //LatLng newMarkerSpawn = new LatLng(gMap.getCameraPosition().target);
-            try
-            {
-                newMarkerMarker.remove();
+            if(mAuth.getCurrentUser() != null) {
+                addNewSpot();
             }
-            catch(NullPointerException e)
-            {
-                Toast.makeText(getApplicationContext(), "Add new Marker!" , Toast.LENGTH_LONG)
-                        .show();
+            else {
+                Toast.makeText(getApplicationContext(), "Not logged in", Toast.LENGTH_SHORT).show();
+
             }
-
-            newMarkerMarker = gMap.addMarker(new MarkerOptions()
-                    .position(gMap.getCameraPosition().target)
-                    .title("Potentially new map marker")
-                    .draggable(true)
-                    .zIndex(1.0f)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-            newMarkerMarker.setTag(dummy);
-
-
-            //Handling of the floating action Button
-            final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-            fab.setVisibility(View.VISIBLE);
-            fab.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View view)
-                {
-                    Snackbar.make(view, "Please fill out to add marker", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    fab.setVisibility(View.GONE);
-
-
-                    Intent addSpot = new Intent(getApplicationContext(), AddSpot.class);
-                    addSpot.putExtra("position", newMarkerMarker.getPosition());
-                    addSpot.putExtra("author", userID);
-                    // Set the request code to any code you like, you can
-                    // identify the callback via this code
-                    startActivityForResult(addSpot, ADD_NEW_MARKER_INTENT);
-
-                    newMarkerMarker.remove();
-                }
-            });
-
-            //Handling of the Snackbar
-            Snackbar.make(findViewById(R.id.map), "Click to cancel:", Snackbar.LENGTH_INDEFINITE)
-                    .setAction("Cancel", new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View view)
-                        {
-                            Snackbar.make(view, "Cancelled!", Snackbar.LENGTH_SHORT).show();
-                            fab.setVisibility(View.GONE);
-                            newMarkerMarker.remove();
-                        }
-                    })
-                    .show();
 
         }
         else if (id == R.id.nav_howto) //Opening the How-To of this App
@@ -642,6 +672,8 @@ public class MainActivity extends AppCompatActivity
 
         return true;
     }
+
+
 
     private void addNewDummySpot()
     {
