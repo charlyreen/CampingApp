@@ -78,6 +78,7 @@ public class Spot {
     }
     public boolean isVisible() { return visible; }
     public long getTimestamp() { return timestamp; }
+    public String getAuthorID() { return authorID; }
     @Exclude
     public String getSpotKey() { return spotKey; }
     @Exclude
