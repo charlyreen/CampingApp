@@ -116,6 +116,12 @@ public class ShowComments extends AppCompatActivity {
                 vCpy.v = v;
                 ((TextView) v.findViewById(R.id.commentTXTVAuthor))
                         .setText(model.getUserkey());
+                /*Check if current comment is from currentuser*/
+                if(mAuth.getCurrentUser() != null &&
+                        model.getUserkey().equals(mAuth.getCurrentUser().getUid())) {
+                    ((ImageButton) v.findViewById(R.id.commDetailDeleteButton))
+                            .setVisibility(View.VISIBLE);
+                }
                 mRootRef.child("users").child(model.getUserkey()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity
     private static final int ADD_NEW_MARKER_INTENT = 100;
     private static final int RC_SIGN_IN = 12322;
     FirebaseAuth mAuth;
+    User currentUser;
 
     //GoogleApiClient mGoogleApiClient;
     private GoogleSignInClient mGoogleSignInClient;
@@ -213,7 +214,7 @@ public class MainActivity extends AppCompatActivity
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
 
-            Toast.makeText(getApplicationContext(), "request code good" , Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "request code good" , Toast.LENGTH_LONG).show();
 
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
@@ -223,6 +224,7 @@ public class MainActivity extends AppCompatActivity
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
                 userToDB(mAuth.getCurrentUser());
+                Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
 
 
             } catch (ApiException e) {
@@ -270,16 +272,21 @@ public class MainActivity extends AppCompatActivity
     private void updateUI() {
         View nav_header_view = navigationView.getHeaderView(0);
         TextView mtextViewUpper = (TextView) nav_header_view.findViewById(R.id.textViewUpper);
+        TextView mtextViewLower = (TextView) nav_header_view.findViewById(R.id.textViewLower);
 
         Menu menu = navigationView.getMenu();
         MenuItem sign_in_out = menu.findItem(R.id.google_sign_in);
 
         if(mAuth.getCurrentUser() != null) {
             mtextViewUpper.setText(mAuth.getCurrentUser().getDisplayName());
+            mtextViewLower.setVisibility(View.VISIBLE);
+            mtextViewLower.setText(mAuth.getCurrentUser().getEmail());
             sign_in_out.setTitle(getString(R.string.navDrawer_logout));
         }
         else {
             mtextViewUpper.setText("Logged out");
+            mtextViewLower.setText("");
+            mtextViewLower.setVisibility(View.GONE);
             sign_in_out.setTitle(getString(R.string.common_signin_button_text_long));
 
         }
