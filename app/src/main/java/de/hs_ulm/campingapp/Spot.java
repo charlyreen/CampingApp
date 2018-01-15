@@ -3,6 +3,8 @@ package de.hs_ulm.campingapp;
 import android.location.Location;
 import android.os.Bundle;
 
+import com.google.firebase.database.Exclude;
+
 import java.math.BigDecimal;
 
 /**
@@ -19,6 +21,7 @@ public class Spot {
     private long timestamp;
     private String type;
     private boolean visible;
+    private String spotKey;
 
     public Spot()
     {
@@ -47,6 +50,7 @@ public class Spot {
         timestamp = b.getLong("timestamp");
         type = b.getString("type");
         visible = b.getBoolean("visible");
+        spotKey = b.getString("key");
     }
     public double getLatitude()
     {
@@ -74,6 +78,10 @@ public class Spot {
     }
     public boolean isVisible() { return visible; }
     public long getTimestamp() { return timestamp; }
+    @Exclude
+    public String getSpotKey() { return spotKey; }
+    @Exclude
+    public void setSpotKey(String spotkey_) { spotKey = spotkey_; }
     public Bundle toBundle() {
         Bundle b = new Bundle();
         b.putString("authorID", authorID);
@@ -85,6 +93,7 @@ public class Spot {
         b.putLong("timestamp", timestamp);
         b.putString("type", type);
         b.putBoolean("visible", visible);
+        b.putString("key", spotKey);
         return b;
     }
     private float getDistanceTo(Location loc) {

@@ -78,6 +78,15 @@
         app:layout_constraintLeft_toLeftOf="@+id/commTitle"
         app:layout_constraintTop_toBottomOf="@+id/commType" />
 
+    <ImageButton
+        android:id="@+id/commDeleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/commRating"
+        app:layout_constraintLeft_toRightOf="@+id/commRating"
+        app:srcCompat="@android:drawable/ic_menu_delete" />
+
     <ListView
         android:id="@+id/commListView"
         android:layout_width="wrap_content"
@@ -86,6 +95,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="@+id/commTitle"
         app:layout_constraintRight_toRightOf="@+id/spotPic"
-        app:layout_constraintTop_toBottomOf="@+id/commDescr"></ListView>
+        app:layout_constraintTop_toBottomOf="@+id/commDescr">
+
+
+    </ListView>
 
 </android.support.constraint.ConstraintLayout>

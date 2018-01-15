@@ -1,6 +1,7 @@
 package de.hs_ulm.campingapp;
 
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.location.Location;
@@ -10,10 +11,12 @@ import android.os.Handler;
 import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
@@ -25,6 +28,8 @@ import com.firebase.ui.database.FirebaseListOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,8 +52,10 @@ public class ShowComments extends AppCompatActivity {
     TextView mDistance;
     TextView mType;
     ImageView mSpotPic;
+    ImageButton mcommDeleteButton;
     float spotRating = 0;
     private int commCounter;
+    private FirebaseAuth mAuth;
 
     class viewWorkAround {
         View v;
@@ -56,6 +63,7 @@ public class ShowComments extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mAuth = FirebaseAuth.getInstance();
         commCounter = 0;
         spotRating = 0;
         super.onCreate(savedInstanceState);
@@ -73,7 +81,7 @@ public class ShowComments extends AppCompatActivity {
 
         //get Intent: Spot data + spotKey!
         Bundle extras = getIntent().getExtras();
-        String spotkey = extras.getString("key");
+        final String spotkey = extras.getString("key");
         Spot thisSpot = new Spot(extras);
         //get Intent: current GPS Location currloc
         Location mCurrentLocation = new Location("currentLocation");
@@ -157,17 +165,71 @@ public class ShowComments extends AppCompatActivity {
         //set Title, Description of Location from Intent Extra Spot Object
         mTitle.setText(thisSpot.getName());
         mDescr.setText(thisSpot.getDescription());
-        mDistance.setText(thisSpot.getDistanceToInKM(mCurrentLocation) + " " +getString(R.string.showComments_distance));
+        mDistance.setText(thisSpot.getDistanceToInKM(mCurrentLocation) + " " + getString(R.string.showComments_distance));
         mType.setText(thisSpot.getType());
         //Download Image in Background -> UI doesnt freeze meeeen
         new DownloadImageTask(mSpotPic).execute(thisSpot.getPic());
+        mcommDeleteButton = findViewById(R.id.commDeleteButton);
+        //Set onClickListener to Delete + Dialog INterface
+        mcommDeleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder= new AlertDialog.Builder(ShowComments.this);
+                builder.setTitle(getString(R.string.really_delete_spot));
+                builder.setMessage(getString(R.string.really_delete_spot_long));
+                builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteSpot(spotkey);
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+            }
+        });
+
+
     }
 
-
+    private void deleteSpot(String spotkey) {
+        mRootRef.child("spots").child(spotkey).setValue(null);
+        mRootRef.child("comments").child(spotkey).setValue(null);
+        finish();
+    }
     @Override
     protected void onStart() {
         super.onStart();
         listAdapter.startListening();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user != null) {
+            mRootRef.child("users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists())
+                    {
+                        User dbUser = dataSnapshot.getValue(User.class);
+                        updateUI(dbUser);
+                    }
+                    else {
+                        updateUI(null);
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+
         //Delay wird gebraucht um ListView erstmal zu laden
         //Hier: Gesamtrating  berechnen
         Handler handler = new Handler();
@@ -183,9 +245,23 @@ public class ShowComments extends AppCompatActivity {
 
 
     }
+    private void updateUI(User user) {
+        if(user != null) {
+            if(user.isAdmin()) {
+                mcommDeleteButton.setVisibility(View.VISIBLE);
+            }
+            else {
+                mcommDeleteButton.setVisibility(View.GONE);
+            }
+        }
+    }
     @Override
     protected void onStop() {
         super.onStop();
         listAdapter.stopListening();
+    }
+    @Override
+    public void finish() {
+        super.finish();
     }
 }

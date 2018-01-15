@@ -374,7 +374,19 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot)
             {
-
+                Spot deletedSpot = dataSnapshot.getValue(Spot.class);
+                //iterate
+                for(Map.Entry<Spot, Marker> entry: markers.entrySet())
+                {
+                    Spot key = entry.getKey();
+                    Marker value = entry.getValue();
+                    if(value.getSnippet().equals(dataSnapshot.getKey())) {
+                        value.remove();
+                    }
+                }
+                Toast.makeText(getApplicationContext(), deletedSpot.getName(), Toast.LENGTH_SHORT).show();
+                //Marker deletedMarker = markers.get(deletedSpot);
+                //deletedMarker.remove();
             }
 
             @Override
@@ -638,7 +650,7 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_filt_none) //No Filters
         {
-            Toast.makeText(getApplicationContext(), "testeroni" , Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "testeroni" , Toast.LENGTH_LONG).show();
             //drawer.openDrawer(GravityCompat.START);
             for (Map.Entry<Spot,Marker> entry : markers.entrySet())
             {

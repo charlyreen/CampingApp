@@ -31,4 +31,11 @@
     <string name="makeNewComments_errorCommentLength">Fehler: Dein Kommentar ist zu kurz!</string>
 
     <string name="navDrawer_logout">Logout</string>
+
+    <string name="really_delete_spot">Delete Comment?</string>
+    <string name="really_delete_comment">Delete Comment?</string>
+    <string name="really_delete_spot_long">Do you really want to delete this spot?</string>
+    <string name="really_delete_comment_long">Do you really want to delete your comment?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>
