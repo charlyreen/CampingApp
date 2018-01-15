@@ -61,6 +61,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -115,7 +116,7 @@ public class MainActivity extends AppCompatActivity
     private static final int ADD_NEW_MARKER_INTENT = 100;
     private static final int RC_SIGN_IN = 12322;
     FirebaseAuth mAuth;
-    User currentUser;
+    private FirebaseAuth.AuthStateListener authStateListener;
 
     //GoogleApiClient mGoogleApiClient;
     private GoogleSignInClient mGoogleSignInClient;
@@ -147,6 +148,13 @@ public class MainActivity extends AppCompatActivity
         mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
 
         mAuth = FirebaseAuth.getInstance();
+        authStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                updateUI();
+                userToDB(firebaseAuth.getCurrentUser());
+            }
+        };
 
 
         //myLocation.setVisible(false);
@@ -197,7 +205,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
-        updateUI();
+        mAuth.addAuthStateListener(authStateListener);
+
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mAuth.removeAuthStateListener(authStateListener);
     }
 
     private void signIn() {
@@ -220,7 +234,6 @@ public class MainActivity extends AppCompatActivity
 
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
-                userToDB(mAuth.getCurrentUser());
                 Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
 
 
