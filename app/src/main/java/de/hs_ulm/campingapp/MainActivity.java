@@ -149,9 +149,6 @@ public class MainActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
 
 
-
-
-
         //myLocation.setVisible(false);
 
         //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
