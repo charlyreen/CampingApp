@@ -72,6 +72,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity
     private static final int ADD_NEW_MARKER_INTENT = 100;
     private static final int RC_SIGN_IN = 12322;
     FirebaseAuth mAuth;
-    User currentUser;
+
 
     //GoogleApiClient mGoogleApiClient;
     private GoogleSignInClient mGoogleSignInClient;
@@ -123,6 +125,10 @@ public class MainActivity extends AppCompatActivity
 
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
+
+    /*Firebase Storage Reference*/
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

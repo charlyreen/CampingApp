@@ -36,6 +36,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
@@ -56,6 +58,8 @@ public class ShowComments extends AppCompatActivity {
     float spotRating = 0;
     private int commCounter;
     private FirebaseAuth mAuth;
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private StorageReference storageRef = storage.getReference();
 
     class viewWorkAround {
         View v;
@@ -207,6 +211,11 @@ public class ShowComments extends AppCompatActivity {
     private void deleteSpot(String spotkey) {
         mRootRef.child("spots").child(spotkey).setValue(null);
         mRootRef.child("comments").child(spotkey).setValue(null);
+        mRootRef.child("imagePaths").child(spotkey).setValue(null);
+        //deleting folders is not possible without keeping track by yourself
+        //so: delete the index file:
+        StorageReference refToDelete= storageRef.child(spotkey + "/index.png");
+        refToDelete.delete();
         finish();
     }
     @Override

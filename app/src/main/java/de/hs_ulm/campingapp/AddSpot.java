@@ -1,17 +1,32 @@
 package de.hs_ulm.campingapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by mad on 06.01.18.
@@ -20,11 +35,43 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class AddSpot extends AppCompatActivity
 {
+    /*Firebase Storage Reference*/
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReference();
+
+    ImageButton launchPhoto;
+    EditText name;
+    EditText description;
+    Spinner type;
+    ImageView mAddSpotImgPreview;
+    int REQUEST_IMAGE_CAPTURE = 103;
+    DatabaseReference mRootRef;
+    String spotkey;
+    ProgressDialog mProgress;
+    String imgPath;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_spot);
+        mRootRef = FirebaseDatabase.getInstance().getReference();
+        spotkey = mRootRef.child("spots").push().getKey();
+        launchPhoto = findViewById(R.id.addSpotLaunchCam);
+        name = (EditText) findViewById(R.id.addSpotName);
+        description = (EditText) findViewById(R.id.addSpotDescription);
+        //EditText picture = (EditText) findViewById(R.id.addSpotPicture);
+        type = (Spinner) findViewById(R.id.addSpotSpinnerType);
+        mAddSpotImgPreview = findViewById(R.id.addSpotImgPreview);
+
+        mProgress = new ProgressDialog(this);
+        //Set onClickListener for launching Camera
+        launchPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onLaunchCamera();
+            }
+        });
+
         // read the intent values
         Bundle extras = getIntent().getExtras();
         if (extras == null)
@@ -41,7 +88,83 @@ public class AddSpot extends AppCompatActivity
             return;
 
     }
+    public void onLaunchCamera()
+    {
+        Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(takePic, REQUEST_IMAGE_CAPTURE);
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_IMAGE_CAPTURE) {
+            mProgress.setMessage("Uploading image...");
+            mProgress.show();
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            resizeBitmap(imageBitmap, 200);
+            mAddSpotImgPreview.setVisibility(View.VISIBLE);
+            mAddSpotImgPreview.setImageBitmap(imageBitmap);
+            String storagePath = spotkey + "/index.png";
+            StorageReference indexPic = storageRef.child(storagePath);
+            encodeBitmapAndSaveToFireBase(imageBitmap, indexPic);
+        }
+    }
+    public void encodeBitmapAndSaveToFireBase(Bitmap bitmap, StorageReference stRef)
+    {
+        imgPath = null;
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
+        UploadTask uploadTask = stRef.putBytes(data);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                imageToDB(downloadUrl, mRootRef, spotkey);
+                imgPath = downloadUrl.toString();
+                Log.d("Success", taskSnapshot.getDownloadUrl().toString());
+                mProgress.dismiss();
+            }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+            Toast.makeText(getApplicationContext(), "Image upload failed", Toast.LENGTH_SHORT);
+            }
+        });
+    }
+    public void imageToDB(Uri pathToImg, DatabaseReference mmRootRef, String spotkey) {
+        String pathToImgStr;
+        pathToImgStr = pathToImg.getPath();
+        mmRootRef.child("imagePaths").child(spotkey).child("index").setValue(pathToImgStr);
+    }
 
+    private Bitmap resizeBitmap(Bitmap img, int maxSize) {
+        Bitmap resized = null;
+
+        int outWidth;
+        int outHeight;
+        int inWidth = img.getWidth();
+        int inHeight = img.getHeight();
+        if(inWidth > inHeight){
+            outWidth = maxSize;
+            outHeight = (inHeight * maxSize) / inWidth;
+        } else {
+            outHeight = maxSize;
+            outWidth = (inWidth * maxSize) / inHeight;
+        }
+
+        if(img != null) {
+            resized = Bitmap.createScaledBitmap(img, outWidth, outHeight, true);
+        }
+        return resized;
+    }
+    /*public void onStart()
+    {
+        super.onStart();
+        //Spot dummySpot;
+        //dummySpot = new Spot("",  0.0, 0.0, "", "", "", 0, "", false);
+        spotkey = mRootRef.child("spots").push().getKey();
+
+    }*/
 
     public void oukay(View view)
     {
@@ -53,22 +176,29 @@ public class AddSpot extends AppCompatActivity
         //show intent values in text fields
         EditText name = (EditText) findViewById(R.id.addSpotName);
         EditText description = (EditText) findViewById(R.id.addSpotDescription);
-        EditText picture = (EditText) findViewById(R.id.addSpotPicture);
+        //EditText picture = (EditText) findViewById(R.id.addSpotPicture);
         Spinner type = (Spinner) findViewById(R.id.addSpotSpinnerType);
+
 
         Long tsLong = System.currentTimeMillis()/1000;
 
         Spot newSpot;
-
+        String imgPath_;
+        if(imgPath != null) {
+            imgPath_ = imgPath;
+        }
+        else {
+            imgPath_ = "";
+        }
         newSpot = new Spot(author, markerPosition.latitude,
                 markerPosition.longitude, name.getText().toString(),
-                description.getText().toString(), picture.getText().toString(), tsLong,
+                description.getText().toString(), imgPath_, tsLong,
                 type.getSelectedItem().toString(), true);
 
 
         Toast.makeText(getApplicationContext(), newSpot.toString() , Toast.LENGTH_LONG)
                 .show();
-        mRootRef.child("spots").push().setValue(newSpot);
+        mRootRef.child("spots").child(spotkey).setValue(newSpot);
 
         finish();
     }
