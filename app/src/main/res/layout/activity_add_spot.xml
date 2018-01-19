@@ -122,8 +122,7 @@
         android:id="@+id/addSpotImgPreview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintLeft_toRightOf="@+id/addSpotLaunchCam"
+        app:layout_constraintRight_toRightOf="@+id/addSpotDescription"
         app:layout_constraintTop_toTopOf="@+id/addSpotLaunchCam"
         app:srcCompat="@drawable/ic_menu_gallery" />
 

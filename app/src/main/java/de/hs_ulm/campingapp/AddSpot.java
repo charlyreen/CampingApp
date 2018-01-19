@@ -62,7 +62,7 @@ public class AddSpot extends AppCompatActivity
         //EditText picture = (EditText) findViewById(R.id.addSpotPicture);
         type = (Spinner) findViewById(R.id.addSpotSpinnerType);
         mAddSpotImgPreview = findViewById(R.id.addSpotImgPreview);
-
+        mAddSpotImgPreview.setVisibility(View.GONE);
         mProgress = new ProgressDialog(this);
         //Set onClickListener for launching Camera
         launchPhoto.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +128,7 @@ public class AddSpot extends AppCompatActivity
             @Override
             public void onFailure(@NonNull Exception e) {
             Toast.makeText(getApplicationContext(), "Image upload failed", Toast.LENGTH_SHORT);
+            mAddSpotImgPreview.setVisibility(View.GONE);
             }
         });
     }
