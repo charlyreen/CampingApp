@@ -2,6 +2,12 @@ package de.hs_ulm.campingapp;
 
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
 
@@ -70,5 +76,23 @@ public class SpotComment {
         return text;
     }
     public long getTimestamp() { return timestamp; }
+
+    public void setUserText(DatabaseReference mRootRef, final TextView userTxtxV)
+    {
+        mRootRef.child("users").child(this.getUserkey()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    User dbUser = dataSnapshot.getValue(User.class);
+                    userTxtxV.setText(dbUser.getName());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
 
 }

@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -30,6 +31,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,6 +43,7 @@ import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ShowComments extends AppCompatActivity {
@@ -55,11 +58,13 @@ public class ShowComments extends AppCompatActivity {
     TextView mType;
     ImageView mSpotPic;
     ImageButton mcommDeleteButton;
-    float spotRating = 0;
+    private float spotRating;
     private int commCounter;
+    private ArrayList<SpotComment> commentArrayList;
+    private SpotCommentAdapter spotcomAdapter;
     private FirebaseAuth mAuth;
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
-    private StorageReference storageRef = storage.getReference();
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
 
     class viewWorkAround {
         View v;
@@ -73,6 +78,8 @@ public class ShowComments extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_comments);
         mRootRef = FirebaseDatabase.getInstance().getReference();
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
         //get UI elements
         mListComments = (ListView) findViewById(R.id.commListView);
         mTitle = (TextView) findViewById(R.id.commTitle);
@@ -105,7 +112,7 @@ public class ShowComments extends AppCompatActivity {
         });
 
         //Get Comments from DB (limited to last 10)
-        int loadMoreLimit = 3; //only x entry shall be loaded, then another 10 if you scroll down and so on...
+        /*int loadMoreLimit = 3; //only x entry shall be loaded, then another 10 if you scroll down and so on...
         Query queryFiltered = mRootRef.child("comments").child(spotkey).orderByKey();
         FirebaseListOptions<SpotComment> options = new FirebaseListOptions.Builder<SpotComment>()
                 .setQuery(queryFiltered, SpotComment.class)
@@ -115,12 +122,12 @@ public class ShowComments extends AppCompatActivity {
             @Override
             protected void populateView(View v, SpotComment model, int position) {
                 //Populate Listview
-                /*Get DisplayName from Firebase Database User Node*/
+                //Get DisplayName from Firebase Database User Node
                 final viewWorkAround vCpy = new viewWorkAround();
                 vCpy.v = v;
                 ((TextView) v.findViewById(R.id.commentTXTVAuthor))
                         .setText(model.getUserkey());
-                /*Check if current comment is from currentuser*/
+                //Check if current comment is from currentuser
                 if(mAuth.getCurrentUser() != null &&
                         model.getUserkey().equals(mAuth.getCurrentUser().getUid())) {
                     ((ImageButton) v.findViewById(R.id.commDetailDeleteButton))
@@ -149,6 +156,7 @@ public class ShowComments extends AppCompatActivity {
                 ((TextView) v.findViewById(R.id.commentTXTVdate))
                         .setText(model.getDate());
                 spotRating += model.getRating();
+                ++commCounter;
             }
             @Override
             public SpotComment getItem(int position) {
@@ -168,9 +176,46 @@ public class ShowComments extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Delete This comment", Toast.LENGTH_SHORT).show();
                 return false;
             }
+        });*/
+
+
+        //Get Comments from DB with normal listview without firebaseUI
+        mListComments = findViewById(R.id.commListView);
+        commentArrayList = new ArrayList<SpotComment>();
+        spotcomAdapter = new SpotCommentAdapter(this, commentArrayList);
+        mListComments.setAdapter(spotcomAdapter);
+        mRootRef.child("comments").child(spotkey).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                SpotComment comm = dataSnapshot.getValue(SpotComment.class);
+                commentArrayList.add(comm);
+                spotcomAdapter.notifyDataSetChanged();
+                countRatingUp(comm.getRating(), mCommRating);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                SpotComment comm = dataSnapshot.getValue(SpotComment.class);
+                commentArrayList.remove(comm);
+                spotcomAdapter.notifyDataSetChanged();
+                countRatingDown(comm.getRating(), mCommRating);
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
         });
-
-
 
         //set Title, Description of Location from Intent Extra Spot Object
         mTitle.setText(thisSpot.getName());
@@ -221,7 +266,8 @@ public class ShowComments extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        listAdapter.startListening();
+        //listAdapter.startListening();
+
         FirebaseUser user = mAuth.getCurrentUser();
         if(user != null) {
             mRootRef.child("users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -244,7 +290,7 @@ public class ShowComments extends AppCompatActivity {
                 }
             });
         }
-
+        /*
         //Delay wird gebraucht um ListView erstmal zu laden
         //Hier: Gesamtrating  berechnen
         Handler handler = new Handler();
@@ -256,9 +302,19 @@ public class ShowComments extends AppCompatActivity {
                 //set gesamtrating in textview
                 mCommRating.setRating(spotRating);
             }
-        }, 500);
+        }, 500);*/
 
 
+    }
+    private void countRatingUp(int currentRating, RatingBar rtb) {
+        this.commCounter++;
+        this.spotRating = this.spotRating + (float) currentRating;
+        rtb.setRating(this.spotRating/(float)this.commCounter);
+    }
+    private void countRatingDown(int currentRating, RatingBar rtb) {
+        this.commCounter--;
+        this.spotRating = this.spotRating - (float) currentRating;
+        rtb.setRating(this.spotRating/(float)this.commCounter);
     }
     private void updateUI(User user) {
         if(user != null) {
@@ -273,7 +329,7 @@ public class ShowComments extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        listAdapter.stopListening();
+       //listAdapter.stopListening();
     }
     @Override
     public void finish() {
