@@ -139,7 +139,8 @@ public class MainActivity extends AppCompatActivity
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        GoogleSignInOptions gso = new GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
@@ -181,8 +182,10 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        /*Init GoogleMaps mapFragment, included in activity_main.xml through app_bar_main to activity_maps*/
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        /*Init GoogleMaps mapFragment, included in activity_main.xml
+          through app_bar_main to activity_maps*/
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
         mapFragment.getMapAsync((OnMapReadyCallback) this);
 
 
@@ -225,7 +228,8 @@ public class MainActivity extends AppCompatActivity
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
 
-            //Toast.makeText(getApplicationContext(), "request code good" , Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "request code good" , Toast.LENGTH_LONG)
+            // .show();
 
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
@@ -234,13 +238,15 @@ public class MainActivity extends AppCompatActivity
 
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
-                Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Login successful", Toast.LENGTH_SHORT)
+                        .show();
 
 
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in nicht gut", e);
-                Toast.makeText(getApplicationContext(), " Sign in failed" , Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), " Sign in failed" , Toast.LENGTH_LONG)
+                        .show();
                 // ...
                 updateUI();
             }
@@ -252,7 +258,8 @@ public class MainActivity extends AppCompatActivity
             final String userEmail = user.getEmail();
             final String userName = user.getDisplayName();
             final String userUID = user.getUid();
-            mRootRef.child("users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            mRootRef.child("users").child(user.getUid())
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (!dataSnapshot.exists()) {
@@ -268,11 +275,15 @@ public class MainActivity extends AppCompatActivity
             });
         }
     }
-    private void signOut() {
+    private void signOut()
+    {
         mAuth.signOut();
-        mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>()
+        {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
+            public void onComplete(@NonNull Task<Void> task)
+            {
                 updateUI();
             }
         });
@@ -287,13 +298,15 @@ public class MainActivity extends AppCompatActivity
         Menu menu = navigationView.getMenu();
         MenuItem sign_in_out = menu.findItem(R.id.google_sign_in);
 
-        if(mAuth.getCurrentUser() != null) {
+        if(mAuth.getCurrentUser() != null)
+        {
             mtextViewUpper.setText(mAuth.getCurrentUser().getDisplayName());
             mtextViewLower.setVisibility(View.VISIBLE);
             mtextViewLower.setText(mAuth.getCurrentUser().getEmail());
             sign_in_out.setTitle(getString(R.string.navDrawer_logout));
         }
-        else {
+        else
+        {
             mtextViewUpper.setText("Logged out");
             mtextViewLower.setText("");
             mtextViewLower.setVisibility(View.GONE);
@@ -303,13 +316,17 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask)
+    {
+        try
+        {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
 
             // Signed in successfully, show authenticated UI.
             //updateUI(account);
-        } catch (ApiException e) {
+        }
+        catch (ApiException e)
+        {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
@@ -333,7 +350,8 @@ public class MainActivity extends AppCompatActivity
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            //Snackbar.make(findViewById(R.id.MainActivity), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            //Snackbar.make(findViewById(R.id.MainActivity),
+                            // "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                             updateUI();
                         }
 
@@ -377,7 +395,8 @@ public class MainActivity extends AppCompatActivity
 
                 markers.put(location, newMarker);
 
-                //Toast.makeText(getApplicationContext(), dataSnapshot.getKey(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(getApplicationContext(), dataSnapshot.getKey(),
+                // Toast.LENGTH_LONG).show();
 
 
             }
@@ -401,7 +420,8 @@ public class MainActivity extends AppCompatActivity
                         value.remove();
                     }
                 }
-                Toast.makeText(getApplicationContext(), deletedSpot.getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), deletedSpot.getName(), Toast.LENGTH_SHORT)
+                        .show();
                 //Marker deletedMarker = markers.get(deletedSpot);
                 //deletedMarker.remove();
             }
@@ -443,8 +463,7 @@ public class MainActivity extends AppCompatActivity
                 {
                     toast.show();
                 }
-
-
+                
                 //GoogleMap
                 return false;
             }
@@ -487,7 +506,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onInfoWindowClick(Marker marker)
     {
-        Toast toast = Toast.makeText(getApplicationContext(), "Not a real spot!", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getApplicationContext(), "Not a real spot!",
+                Toast.LENGTH_LONG);
         if(!marker.isDraggable())
         {
             Intent showComment;
@@ -561,7 +581,8 @@ public class MainActivity extends AppCompatActivity
 
         //public Spot(String authorID_, double latitude_, double longitude_, String name_,
         //    String description_, String pic_, long timestamp_, String type_, boolean visible_)
-        Spot dummy = new Spot(mAuth.getCurrentUser().getUid(),0,0,"New spot",
+        Spot dummy = new Spot(mAuth.getCurrentUser()
+                .getUid(),0,0,"New spot",
                 "Drag me where you want the new spot to be!",
                 "about:blank",00,"Soon to be spot",true);
 
@@ -638,11 +659,13 @@ public class MainActivity extends AppCompatActivity
             FirebaseUser user = mAuth.getCurrentUser();
             if(user == null) {
                 signIn();
-                Toast.makeText(getApplicationContext(), "Logged in " , Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Logged in " , Toast.LENGTH_LONG)
+                        .show();
             }
             else {
                 signOut();
-                Toast.makeText(getApplicationContext(), "Logged out " , Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Logged out " , Toast.LENGTH_LONG)
+                        .show();
             }
             drawer.closeDrawer(GravityCompat.START);
         }
@@ -656,7 +679,8 @@ public class MainActivity extends AppCompatActivity
                 addNewSpot();
             }
             else {
-                Toast.makeText(getApplicationContext(), "Not logged in", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Not logged in", Toast.LENGTH_SHORT)
+                        .show();
 
             }
 
@@ -664,6 +688,8 @@ public class MainActivity extends AppCompatActivity
         else if (id == R.id.nav_howto) //Opening the How-To of this App
         {
             drawer.closeDrawer(GravityCompat.START);
+            Intent manual = new Intent(getApplicationContext(), Manual.class);
+            startActivity(manual);
         }
         else if (id == R.id.nav_filt_none) //No Filters
         {

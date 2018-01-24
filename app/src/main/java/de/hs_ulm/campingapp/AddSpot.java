@@ -83,7 +83,6 @@ public class AddSpot extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-
         cancel(getCurrentFocus());
         super.onBackPressed();
     }

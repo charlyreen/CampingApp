@@ -18,7 +18,7 @@
     <string name="filter_scene">Scenic</string>
     <string name="filter_action">Action</string>
 
-    <string name="showComments_distance">von dir entfernt</string>
+    <string name="showComments_distance">away from you</string>
 
     <string-array name="Filters">
         <item>@string/filter_sleep</item>
@@ -26,16 +26,38 @@
         <item>@string/filter_action</item>
     </string-array>
 
-    <string name="makeNewComments_yourRating">Deine Bewertung für diesen Spot:</string>
-    <string name="makeNewComments_writeComment">Gib bitte eine kurzen Bewertung oder einen Kommentar zu diesem Spot ab:</string>
-    <string name="makeNewComments_errorCommentLength">Fehler: Dein Kommentar ist zu kurz!</string>
+    <string name="makeNewComments_yourRating">Yout rating for this spot:</string>
+    <string name="makeNewComments_writeComment">Please leave a rating or a short comment:</string>
+    <string name="makeNewComments_errorCommentLength">Error: Your comment is too short!</string>
 
     <string name="navDrawer_logout">Logout</string>
 
-    <string name="really_delete_spot">Delete Comment?</string>
-    <string name="really_delete_comment">Delete Comment?</string>
+    <string name="really_delete_spot">Delete spot?</string>
+    <string name="really_delete_comment">Delete comment?</string>
     <string name="really_delete_spot_long">Do you really want to delete this spot?</string>
     <string name="really_delete_comment_long">Do you really want to delete your comment?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+
+
+    <string name="manual_text">
+        <big><b><u>"What you need for the app to work:\n\n"</u></b></big>
+
+        "- Location services (GPS,&#8230;) have to be activated and the app needs the rights to "
+        "access them.\n"
+        "- Access to the internet (Wi-Fi, mobile data,&#8230;) has to be available and the app"
+        "needs the rights to use it.\n"
+        "- The Android version installed on your device has to be APK version 23 (Marshmallow)"
+        "or higher.\n\n\n"
+
+
+        <big><b><u>"What this app is for:\n\n"</u></b></big>
+
+        "This app is meant for people to share places they find interesting or useful with others"
+        "and to comment on and rate the places shared by others. \n\n"
+
+
+    </string>
+
 </resources>
