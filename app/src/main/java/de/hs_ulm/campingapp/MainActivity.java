@@ -73,6 +73,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
@@ -125,6 +127,10 @@ public class MainActivity extends AppCompatActivity
     /*Firebase Data Reference*/
     DatabaseReference mRootRef;
 
+    /*Firebase Storage Reference*/
+    FirebaseStorage storage = FirebaseStorage.getInstance();
+    StorageReference storageRef = storage.getReference();
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -139,8 +145,7 @@ public class MainActivity extends AppCompatActivity
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-        GoogleSignInOptions gso = new GoogleSignInOptions
-                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
@@ -463,7 +468,7 @@ public class MainActivity extends AppCompatActivity
                 {
                     toast.show();
                 }
-                
+
                 //GoogleMap
                 return false;
             }

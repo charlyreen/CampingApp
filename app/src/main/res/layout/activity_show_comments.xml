@@ -34,8 +34,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/commDescr"
         app:srcCompat="@drawable/ic_menu_gallery" />
 
     <TextView
@@ -44,16 +45,15 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         app:layout_constraintLeft_toLeftOf="@+id/commTitle"
-        app:layout_constraintTop_toBottomOf="@+id/commTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/commDistance" />
 
     <TextView
         android:id="@+id/commDistance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
         android:text="distance"
-        app:layout_constraintBottom_toBottomOf="@+id/commTitle"
-        app:layout_constraintLeft_toRightOf="@+id/commTitle" />
+        app:layout_constraintLeft_toLeftOf="@+id/commTitle"
+        app:layout_constraintTop_toBottomOf="@+id/commTitle" />
 
     <TextView
         android:id="@+id/commDescr"
@@ -93,9 +93,8 @@
         android:layout_height="0dp"
         android:longClickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@+id/commTitle"
-        app:layout_constraintRight_toRightOf="@+id/spotPic"
-        app:layout_constraintTop_toBottomOf="@+id/commDescr">
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spotPic">
 
 
     </ListView>

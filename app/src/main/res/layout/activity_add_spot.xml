@@ -87,31 +87,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addSpotTypeTitle" />
 
-    <TextView
-        android:id="@+id/addSpotPictureTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Picture of Spot (Insert URL):"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addSpotSpinnerType" />
-
-    <EditText
-        android:id="@+id/addSpotPicture"
-        android:layout_width="350dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="16dp"
-        android:ems="10"
-        android:hint="Insert URL of picture here"
-        android:inputType="textMultiLine"
-        android:selectAllOnFocus="false"
-        android:singleLine="false"
-        android:text="about:blank"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addSpotPictureTitle" />
-
     <Button
         android:id="@+id/addSpotButtonOK"
         android:layout_width="wrap_content"
@@ -134,5 +109,21 @@
         android:onClick="cancel"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/addSpotLaunchCam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="@+id/addSpotSpinnerType"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotSpinnerType"
+        app:srcCompat="@drawable/ic_menu_camera" />
+
+    <ImageView
+        android:id="@+id/addSpotImgPreview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="@+id/addSpotDescription"
+        app:layout_constraintTop_toTopOf="@+id/addSpotLaunchCam"
+        app:srcCompat="@drawable/ic_menu_gallery" />
 
 </android.support.constraint.ConstraintLayout>
