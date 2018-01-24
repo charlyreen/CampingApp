@@ -75,10 +75,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-
-import org.w3c.dom.Text;
-
-import java.security.acl.Group;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
