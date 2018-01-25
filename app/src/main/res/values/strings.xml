@@ -19,6 +19,7 @@
     <string name="filter_action">Action</string>
 
     <string name="showComments_distance">away from you</string>
+    <string name="showCommentsbyAuthor">by</string>
 
     <string-array name="Filters">
         <item>@string/filter_sleep</item>
@@ -40,6 +41,9 @@
     <string name="no">No</string>
     <string name="tooManyPics">You have already uploaded enough pictures, please proceed or cancel.</string>
 
+    <string name="reportTo">charlyreen@gmail.com</string>
+    <string name="reportSubject">Reporting spot: </string>
+    <string name="reportText">Dear Administrator,\n I\'m reporting this spot because </string>
 
     <string name="manual_text">
         <big><b><u>"What you need for the app to work:\n\n"</u></b></big>

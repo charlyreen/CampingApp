@@ -58,11 +58,13 @@ public class ShowComments extends AppCompatActivity {
     private FirebaseListAdapter<SpotComment> listAdapter;
     ListView mListComments;
     TextView mTitle;
+    TextView mAuthor;
     TextView mDescr;
     RatingBar mCommRating;
     FloatingActionButton mCommNewComment;
     TextView mDistance;
     TextView mType;
+    ImageButton mcommReportSpot;
     //ImageView mSpotPic;
     ImageButton mcommDeleteButton;
     CustomPagerAdapter mCustomPagerAdapter;
@@ -96,11 +98,13 @@ public class ShowComments extends AppCompatActivity {
         mViewPager.setAdapter(mCustomPagerAdapter);
         mListComments = (ListView) findViewById(R.id.commListView);
         mTitle = (TextView) findViewById(R.id.commTitle);
+        mAuthor = (TextView) findViewById(R.id.commAuthor);
         mDescr = (TextView) findViewById(R.id.commDescr);
         mCommRating = (RatingBar) findViewById(R.id.commRating);
         mCommNewComment = (FloatingActionButton) findViewById(R.id.commNewComment);
         mDistance = (TextView) findViewById(R.id.commDistance);
         mType = (TextView) findViewById(R.id.commType);
+        mcommReportSpot = (ImageButton) findViewById(R.id.commReportSpot);
         //mSpotPic = (ImageView) findViewById(R.id.spotPic);
 
         //get Intent: Spot data + spotKey!
@@ -121,6 +125,14 @@ public class ShowComments extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(makeNewComment);
+            }
+        });
+
+        //Report Spot
+        mcommReportSpot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                reportSpot(spotkey);
             }
         });
 
@@ -166,6 +178,7 @@ public class ShowComments extends AppCompatActivity {
 
         //set Title, Description of Location from Intent Extra Spot Object
         mTitle.setText(thisSpot.getName());
+        thisSpot.setUserText(mRootRef, mAuthor);
         mDescr.setText(thisSpot.getDescription());
         mDistance.setText(thisSpot.getDistanceToInKM(mCurrentLocation) + " " + getString(R.string.showComments_distance));
         mType.setText(thisSpot.getType());
@@ -201,6 +214,20 @@ public class ShowComments extends AppCompatActivity {
 
 
     }
+
+    private void reportSpot(String spotkey)
+    {
+        final Intent reportThisSpot;
+        reportThisSpot = new Intent(Intent.ACTION_SENDTO);
+        reportThisSpot.setData(Uri.parse("mailto:"));
+        reportThisSpot.putExtra(Intent.EXTRA_EMAIL, (new String[] { getString(R.string.reportTo) }));
+        reportThisSpot.putExtra(Intent.EXTRA_SUBJECT, (getString(R.string.reportSubject) + spotkey));
+        reportThisSpot.putExtra(Intent.EXTRA_TEXT, getString(R.string.reportText));
+        if(reportThisSpot.resolveActivity(getPackageManager()) != null) {
+            startActivity(reportThisSpot);
+        }
+    }
+
     private void getPictures(DatabaseReference ref, String spotkey, final CustomPagerAdapter adapter) {
         ref.child("imagePaths").child(spotkey).child("index").addChildEventListener(new ChildEventListener() {
             @Override

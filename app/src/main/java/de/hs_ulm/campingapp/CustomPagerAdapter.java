@@ -44,7 +44,21 @@ public class CustomPagerAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View itemView = mLayoutInflater.inflate(R.layout.pager_item, container, false);
         ImageView imgV = itemView.findViewById(R.id.pagerImgView);
+        ImageView marrowLeft = itemView.findViewById(R.id.arrowLeft);
+        ImageView marrowRight = itemView.findViewById(R.id.arrowRight);
         new DownloadImageTask(imgV).execute(imgPaths.get(position));
+        if((position > 0 && position < imgPaths.size()-1) || (imgPaths.size() < 2)) {
+            marrowLeft.setVisibility(View.VISIBLE);
+            marrowRight.setVisibility(View.VISIBLE);
+        }
+        if(position == 0) {
+            marrowLeft.setVisibility(View.GONE);
+        }
+        if(position == imgPaths.size()-1) {
+            marrowRight.setVisibility(View.GONE);
+        }
+
+
         container.addView(itemView);
         return itemView;
     }
