@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="Title of a nice spot!"
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,6 +23,8 @@
         android:id="@+id/newCommDescr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="TextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/newCommTitle" />
@@ -30,15 +33,17 @@
         android:id="@+id/newCommYourRating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:text="@string/makeNewComments_yourRating"
-        app:layout_constraintTop_toBottomOf="@+id/newCommDescr"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newCommDescr" />
 
     <RatingBar
         android:id="@+id/newCommRatingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:numStars="5"
         android:rating="5"
         android:scaleX="1"
@@ -52,6 +57,7 @@
         android:id="@+id/commentLine"
         android:layout_width="0dp"
         android:layout_height="1dp"
+        android:layout_marginBottom="24dp"
         android:background="@android:color/black"
         app:layout_constraintBottom_toTopOf="@+id/newCommYourRating" />
 
@@ -59,6 +65,7 @@
         android:id="@+id/writeComment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="@string/makeNewComments_writeComment"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
@@ -69,6 +76,9 @@
         android:id="@+id/newCommComment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textMultiLine"
         android:selectAllOnFocus="false"
@@ -83,6 +93,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:clickable="true"
+        android:focusable="true"
         app:backgroundTint="@color/colorPrimary"
         app:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
