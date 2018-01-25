@@ -150,9 +150,11 @@ public class MainActivity extends AppCompatActivity
         mGoogleSignInClient = GoogleSignIn.getClient(this,gso);
 
         mAuth = FirebaseAuth.getInstance();
-        authStateListener = new FirebaseAuth.AuthStateListener() {
+        authStateListener = new FirebaseAuth.AuthStateListener()
+        {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth)
+            {
                 updateUI();
                 userToDB(firebaseAuth.getCurrentUser());
             }
@@ -207,23 +209,27 @@ public class MainActivity extends AppCompatActivity
 
     }
     @Override
-    public void onStart() {
+    public void onStart()
+    {
         super.onStart();
         mAuth.addAuthStateListener(authStateListener);
 
     }
     @Override
-    protected void onStop() {
+    protected void onStop()
+    {
         super.onStop();
         mAuth.removeAuthStateListener(authStateListener);
     }
 
-    private void signIn() {
+    private void signIn()
+    {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
@@ -233,7 +239,8 @@ public class MainActivity extends AppCompatActivity
             // .show();
 
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
+            try
+            {
                 // Google Sign In was successful, authenticate with Firebase
                 //Log.w(TAG, "trying", e);
 
@@ -243,7 +250,9 @@ public class MainActivity extends AppCompatActivity
                         .show();
 
 
-            } catch (ApiException e) {
+            }
+            catch (ApiException e)
+            {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in nicht gut", e);
                 Toast.makeText(getApplicationContext(), " Sign in failed" , Toast.LENGTH_LONG)
@@ -253,24 +262,30 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-    private void userToDB(FirebaseUser user) {
+    private void userToDB(FirebaseUser user)
+    {
         //Check if user is already in DB, if not then make new entry in users node
-        if (user != null) {
+        if (user != null)
+        {
             final String userEmail = user.getEmail();
             final String userName = user.getDisplayName();
             final String userUID = user.getUid();
             mRootRef.child("users").child(user.getUid())
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                    .addListenerForSingleValueEvent(new ValueEventListener()
+            {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    if (!dataSnapshot.exists()) {
+                public void onDataChange(DataSnapshot dataSnapshot)
+                {
+                    if (!dataSnapshot.exists())
+                    {
                         User dbUser = new User(userEmail, userName);
                         mRootRef.child("users").child(userUID).setValue(dbUser);
                     }
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
+                public void onCancelled(DatabaseError databaseError)
+                {
 
                 }
             });
@@ -291,7 +306,8 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    private void updateUI() {
+    private void updateUI()
+    {
         View nav_header_view = navigationView.getHeaderView(0);
         TextView mtextViewUpper = (TextView) nav_header_view.findViewById(R.id.textViewUpper);
         TextView mtextViewLower = (TextView) nav_header_view.findViewById(R.id.textViewLower);
@@ -312,7 +328,6 @@ public class MainActivity extends AppCompatActivity
             mtextViewLower.setText("");
             mtextViewLower.setVisibility(View.GONE);
             sign_in_out.setTitle(getString(R.string.common_signin_button_text_long));
-
         }
 
     }
@@ -335,20 +350,26 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct)
+    {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>()
+                {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
+                    public void onComplete(@NonNull Task<AuthResult> task)
+                    {
+                        if (task.isSuccessful())
+                        {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI();
-                        } else {
+                        }
+                        else
+                            {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             //Snackbar.make(findViewById(R.id.MainActivity),
@@ -399,7 +420,6 @@ public class MainActivity extends AppCompatActivity
                 //Toast.makeText(getApplicationContext(), dataSnapshot.getKey(),
                 // Toast.LENGTH_LONG).show();
 
-
             }
 
             @Override
@@ -417,7 +437,8 @@ public class MainActivity extends AppCompatActivity
                 {
                     Spot key = entry.getKey();
                     Marker value = entry.getValue();
-                    if(value.getSnippet().equals(dataSnapshot.getKey())) {
+                    if(value.getSnippet().equals(dataSnapshot.getKey()))
+                    {
                         value.remove();
                     }
                 }
@@ -453,18 +474,16 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onMarkerClick(Marker marker)
             {
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        "Something went wrong...", Toast.LENGTH_LONG);
-                //toast.show();
                 try
                 {
                     marker.showInfoWindow();
                 }
                 catch(NullPointerException e)
                 {
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            "Something went wrong...", Toast.LENGTH_LONG);
                     toast.show();
                 }
-
                 //GoogleMap
                 return false;
             }
@@ -478,7 +497,8 @@ public class MainActivity extends AppCompatActivity
 
         //OnDragListener for when one moves the draggable Marker to create a new Spot,
         //the Position of said marker has to be noticed and put into him again
-        gMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+        gMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener()
+        {
             @Override
             public void onMarkerDragStart(Marker arg0)
             {
@@ -577,7 +597,8 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void addNewSpot() {
+    private void addNewSpot()
+    {
         drawer.closeDrawer(GravityCompat.START);
 
         //public Spot(String authorID_, double latitude_, double longitude_, String name_,
@@ -606,7 +627,6 @@ public class MainActivity extends AppCompatActivity
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
         newMarkerMarker.setTag(dummy);
 
-
         //Handling of the floating action Button
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.VISIBLE);
@@ -623,7 +643,6 @@ public class MainActivity extends AppCompatActivity
                 Intent addSpot = new Intent(getApplicationContext(), AddSpot.class);
                 addSpot.putExtra("position", newMarkerMarker.getPosition());
                 addSpot.putExtra("author", mAuth.getCurrentUser().getUid());
-                // Set the request code to any code you like, you can
                 // identify the callback via this code
                 startActivityForResult(addSpot, ADD_NEW_MARKER_INTENT);
 
@@ -751,8 +770,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-
-
     private void addNewDummySpot()
     {
         Spot dummy;
@@ -861,55 +878,56 @@ public class MainActivity extends AppCompatActivity
     {
         // Begin by checking if the device has the necessary location settings.
         mSettingsClient.checkLocationSettings(mLocationSettingsRequest)
-                .addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>()
+            .addOnSuccessListener(this, new OnSuccessListener<LocationSettingsResponse>()
+            {
+                @Override
+                public void onSuccess(LocationSettingsResponse locationSettingsResponse)
                 {
-                    @Override
-                    public void onSuccess(LocationSettingsResponse locationSettingsResponse)
-                    {
-                        Log.i(TAG, "All location settings are satisfied.");
+                    Log.i(TAG, "All location settings are satisfied.");
 
-                        //TODO: Maybe add permission check???
-                        //noinspection MissingPermission
-                        mFusedLocationClient.requestLocationUpdates(mLocationRequest,
-                                mLocationCallback, Looper.myLooper());
+                    //TODO: Maybe add permission check???
+                    //noinspection MissingPermission
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                            mLocationCallback, Looper.myLooper());
 
-                        //updateUI();
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener()
+                    //updateUI();
+                }
+            })
+            .addOnFailureListener(this, new OnFailureListener()
+            {
+                @Override
+                public void onFailure(@NonNull Exception e)
                 {
-                    @Override
-                    public void onFailure(@NonNull Exception e)
+                    int statusCode = ((ApiException) e).getStatusCode();
+                    switch (statusCode)
                     {
-                        int statusCode = ((ApiException) e).getStatusCode();
-                        switch (statusCode)
-                        {
-                            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                                Log.i(TAG, "Location settings are not satisfied. Attempting to upgrade " +
-                                        "location settings ");
-                                try
-                                {
-                                    // Show the dialog by calling startResolutionForResult(), and check the
-                                    // result in onActivityResult().
-                                    ResolvableApiException rae = (ResolvableApiException) e;
-                                    rae.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
-                                }
-                                catch (IntentSender.SendIntentException sie)
-                                {
-                                    Log.i(TAG, "PendingIntent unable to execute request.");
-                                }
-                                break;
-                            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                                String errorMessage = "Location settings are inadequate, and cannot be " +
-                                        "fixed here. Fix in Settings.";
-                                Log.e(TAG, errorMessage);
-                                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
-                                mRequestingLocationUpdates = false;
-                        }
-
-                        //updateUI();
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            Log.i(TAG, "Location settings are not satisfied. " +
+                                    "Attempting to upgrade location settings ");
+                            try
+                            {
+                                // Show the dialog by calling startResolutionForResult(),
+                                // and check the result in onActivityResult().
+                                ResolvableApiException rae = (ResolvableApiException) e;
+                                rae.startResolutionForResult(MainActivity.this,
+                                        REQUEST_CHECK_SETTINGS);
+                            }
+                            catch (IntentSender.SendIntentException sie)
+                            {
+                                Log.i(TAG, "PendingIntent unable to execute request.");
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            String errorMessage = "Location settings are inadequate, and cannot be "
+                                    + "fixed here. Fix in Settings.";
+                            Log.e(TAG, errorMessage);
+                            Toast.makeText(MainActivity.this, errorMessage,
+                                    Toast.LENGTH_LONG).show();
+                            mRequestingLocationUpdates = false;
                     }
-                });
+
+                }
+            });
     }
 
     private void stopLocationUpdates()
@@ -1076,5 +1094,4 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-
 }

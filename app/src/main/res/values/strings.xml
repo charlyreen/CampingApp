@@ -59,8 +59,68 @@
         <big><b><u>"What this app is for:\n\n"</u></b></big>
 
         "This app is meant for people to share places they find interesting or useful with others"
-        "and to comment on and rate the places shared by others. \n\n"
+        "and to comment on and rate the places shared by others. \n\n\n"
 
+
+        <big><b><u>"How to...?\n\n"</u></b></big>
+
+        <b>"&#8594; Navigate the map:\n"</b>
+
+        "Navigation works like in the Google Maps app.\n"
+        "Drag the map to view other parts of it, pinch the map with two fingers or spread them to"
+        "zoom in and out or turn them to rotate.\n"
+        "Alternatively, double tap the map to zoom in or tap with two fingers to zoom out.\n"
+        "If the map is turned, a press on the compass button in the top left corner returns the"
+        "rotation to its initial state. A press on the button in the top right corner returns the"
+        "view to your position.\n\n"
+
+        <b>"&#8594; See spot details:\n"</b>
+
+        "To see the details of a spot, click on its marker on the map. A speech bubble with the"
+        "spots name, description and type will pop up.\n"
+        "To see more details, click on the speech bubble.\n"
+        "A screen will pop up which contains:\n"
+        "- The name of the spot\n"
+        "- Its distance from you\n"
+        "- Its type\n"
+        "- Its average user rating (1&#8230;5 stars)\n"
+        "- Its description\n"
+        "- One or more pictures, which can be swiped through (if spot-creator uploaded some)\n"
+        "- Comments of users, containing their ratings\n"
+        "- If logged in, a button (&#8853;) to write your own comment\n\n"
+
+        <b>"&#8594; Log in with your Google account:\n"</b>
+
+        "While on the map, you can open a side drawer by clicking on the three stripes in the top"
+        "left corner of the screen, or by swiping inwards from the left border of the screen.\n"
+        "By pressing the top button in the drawer, a login screen appears in which you can select"
+        "the account with which you want to log in.\n\n"
+
+        <b>"&#8594; Add a spot to the map:\n"</b>
+
+        "Spots can only be created while being logged into a Google account.\n"
+        "To add a spot, click the \"Add Marker\"-button in the drawer. A blue marker will appear in"
+        "the middle of the map. This marker can be dragged to the desired location for the new"
+        "spot. To proceed with the spot-creation, click the blue &#8853;-button in the bottom right"
+        "corner of the screen.\n"
+        "Doing so will open another screen which contains a form you have to fill out with"
+        "information about the spot. A click on the button with the camera-symbol opens the camera"
+        "in your smartphone. By taking a photo and clicking \"OK\" the picture is added to the"
+        "spot. After filling out all the lines, complete the creation with a click on the"
+        "\"create\"-button.\n\n"
+
+        <b>"&#8594; Add a comment and rating to a spot:\n"</b>
+
+        "Commenting and rating can only be done while being logged into a Google account.\n"
+        "To add a comment to a spot, open its detail screen and click on the red &#8853;-button.\n"
+        "A new screen will pop up in which you can give a rating by clicking the desired amount of"
+        "stars and which contains a line where the comment can be written.\n"
+        "A click on the blue &#8853;-button in the bottom right corner will add the comment.\n\n"
+
+        <b>"&#8594; Remove a comment from a spot:\n"</b>
+
+        "You can only remove comments you are the author of.\n"
+        "While in a spot's detail screen, find your comment and click on the red &#215;.\n\n"
 
     </string>
 

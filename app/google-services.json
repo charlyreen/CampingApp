@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "288100422679-kgch1finf4459u85mg7vvq5prfipibkq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "de.hs_ulm.campingapp",
+            "certificate_hash": "ff7bde4a44856aa8227f42da35d3be353ba93370"
+          }
+        },
+        {
           "client_id": "288100422679-da5q4t8vu0faak5qd31r2761kr3ufj0v.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

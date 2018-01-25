@@ -14,7 +14,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
- * Created by mad on 18.01.18.
+ * Created by Martin on 18.01.18.
  */
 
 public class Manual extends AppCompatActivity

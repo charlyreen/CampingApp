@@ -21,7 +21,7 @@ import java.net.URL;
 
 
 /**
- * Created by mad on 16.12.17.
+ * Created by Martin on 16.12.17.
  */
 
 public class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter

@@ -30,7 +30,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 
 /**
- * Created by mad on 06.01.18.
+ * Created by Martin on 06.01.18.
  */
 
 
