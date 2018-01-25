@@ -111,74 +111,6 @@ public class ShowComments extends AppCompatActivity {
             }
         });
 
-        //Get Comments from DB (limited to last 10)
-        /*int loadMoreLimit = 3; //only x entry shall be loaded, then another 10 if you scroll down and so on...
-        Query queryFiltered = mRootRef.child("comments").child(spotkey).orderByKey();
-        FirebaseListOptions<SpotComment> options = new FirebaseListOptions.Builder<SpotComment>()
-                .setQuery(queryFiltered, SpotComment.class)
-                .setLayout(R.layout.layout_commentlist)
-                .build();
-        listAdapter = new FirebaseListAdapter<SpotComment>(options) {
-            @Override
-            protected void populateView(View v, SpotComment model, int position) {
-                //Populate Listview
-                //Get DisplayName from Firebase Database User Node
-                final viewWorkAround vCpy = new viewWorkAround();
-                vCpy.v = v;
-                ((TextView) v.findViewById(R.id.commentTXTVAuthor))
-                        .setText(model.getUserkey());
-                //Check if current comment is from currentuser
-                if(mAuth.getCurrentUser() != null &&
-                        model.getUserkey().equals(mAuth.getCurrentUser().getUid())) {
-                    ((ImageButton) v.findViewById(R.id.commDetailDeleteButton))
-                            .setVisibility(View.VISIBLE);
-                }
-                mRootRef.child("users").child(model.getUserkey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if(dataSnapshot.exists()) {
-                            User dbUser = dataSnapshot.getValue(User.class);
-                            ((TextView) vCpy.v.findViewById(R.id.commentTXTVAuthor))
-                                    .setText(dbUser.getName());
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-                ((RatingBar) v.findViewById(R.id.commentRatingBar))
-                        .setRating((float) model.getRating());
-                ((TextView) v.findViewById(R.id.commentTXTVcomment))
-                        .setText(model.getText());
-                ((TextView) v.findViewById(R.id.commentTXTVdate))
-                        .setText(model.getDate());
-                spotRating += model.getRating();
-                ++commCounter;
-            }
-            @Override
-            public SpotComment getItem(int position) {
-                //Hack to show items in descending order
-                return super.getItem(getCount() - 1 - position);
-            }
-
-        };
-
-        //Attach Adapter to ListView
-        mListComments.setAdapter(listAdapter);
-        //Delete own Comments:
-        mListComments.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //Dialog: delete?
-                Toast.makeText(getApplicationContext(), "Delete This comment", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });*/
-
-
         //Get Comments from DB with normal listview without firebaseUI
         mListComments = findViewById(R.id.commListView);
         commentArrayList = new ArrayList<SpotComment>();
@@ -188,6 +120,8 @@ public class ShowComments extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 SpotComment comm = dataSnapshot.getValue(SpotComment.class);
+                comm.setCommentKey(dataSnapshot.getKey());
+                comm.setSpotKey(spotkey);
                 commentArrayList.add(comm);
                 spotcomAdapter.notifyDataSetChanged();
                 countRatingUp(comm.getRating(), mCommRating);
@@ -290,21 +224,6 @@ public class ShowComments extends AppCompatActivity {
                 }
             });
         }
-        /*
-        //Delay wird gebraucht um ListView erstmal zu laden
-        //Hier: Gesamtrating  berechnen
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                commCounter = mListComments.getAdapter().getCount();
-                spotRating = spotRating/2;
-                spotRating = spotRating/commCounter;
-                //set gesamtrating in textview
-                mCommRating.setRating(spotRating);
-            }
-        }, 500);*/
-
-
     }
     private void countRatingUp(int currentRating, RatingBar rtb) {
         this.commCounter++;
@@ -329,7 +248,6 @@ public class ShowComments extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-       //listAdapter.stopListening();
     }
     @Override
     public void finish() {

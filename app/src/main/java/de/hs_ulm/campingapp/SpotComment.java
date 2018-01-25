@@ -7,6 +7,7 @@ import android.widget.TextView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Calendar;
@@ -21,6 +22,10 @@ public class SpotComment {
     private int rating;
     private String text;
     private long timestamp;
+    @Exclude
+    private String commentKey;
+    @Exclude
+    private String spotKey;
 
     public SpotComment() {
         //Default constructor required for calls to DataSnapshot.getValue(SpotComment.class)
@@ -65,6 +70,10 @@ public class SpotComment {
     public void setText(String text_) {
         text = text_;
     }
+    @Exclude
+    public void setCommentKey(String key) { commentKey = key; }
+    @Exclude
+    public void setSpotKey(String key) { spotKey = key; }
 
     public String getUserkey() {
         return userkey;
@@ -76,6 +85,11 @@ public class SpotComment {
         return text;
     }
     public long getTimestamp() { return timestamp; }
+    @Exclude
+    public String getCommentKey() { return commentKey; }
+    @Exclude
+    public String getSpotKey() { return spotKey; }
+
 
     public void setUserText(DatabaseReference mRootRef, final TextView userTxtxV)
     {
@@ -93,6 +107,21 @@ public class SpotComment {
 
             }
         });
+    }
+
+    public boolean belongsToUser(String userKeyToCompare) {
+        if(userKeyToCompare != null && this.getUserkey() != null) {
+            if(userKeyToCompare.equals(this.getUserkey())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void delete(DatabaseReference mRootRef) {
+        if(commentKey != null) {
+            mRootRef.child("comments").child(spotKey).child(commentKey).setValue(null);
+        }
     }
 
 }

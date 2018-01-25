@@ -31,8 +31,12 @@
         <ImageButton
             android:id="@+id/commDetailDeleteButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:adjustViewBounds="false"
+            android:background="@null"
+            android:cropToPadding="false"
+            android:focusable="false"
             android:visibility="gone"
             app:srcCompat="@android:drawable/ic_delete" />
 
