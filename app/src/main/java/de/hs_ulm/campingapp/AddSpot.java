@@ -28,6 +28,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * Created by Martin on 06.01.18.
@@ -107,7 +108,7 @@ public class AddSpot extends AppCompatActivity
         }
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_IMAGE_CAPTURE) {
+        if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             if(countPics < 3) {
                 mProgress.setMessage("Uploading image...");
                 mProgress.show();
@@ -120,6 +121,7 @@ public class AddSpot extends AppCompatActivity
                 StorageReference indexPic = storageRef.child(storagePath);
                 encodeBitmapAndSaveToFireBase(imageBitmap, indexPic);
                 countPics++;
+
             }
         }
     }
