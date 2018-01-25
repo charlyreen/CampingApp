@@ -1,103 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/commLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.hs_ulm.campingapp.ShowComments">
+    android:fitsSystemWindows="true"
+    android:touchscreenBlocksFocus="false">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/comm_app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:visibility="visible">
+
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/comm_toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:visibility="visible"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false"
+            app:toolbarId="@+id/toolbar_manual">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/commTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:text="TextView"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="parent" />
+
+                <ImageView
+                    android:id="@+id/spotPic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:visibility="gone"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/commDescr"
+                    app:srcCompat="@drawable/ic_menu_gallery" />
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/commviewPager"
+                    android:layout_width="0dp"
+                    android:layout_height="200dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/commDescr" />
+
+
+                <TextView
+                    android:id="@+id/commType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    app:layout_constraintLeft_toLeftOf="@+id/commTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/commDistance" />
+
+                <TextView
+                    android:id="@+id/commDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="distance"
+                    app:layout_constraintLeft_toLeftOf="@+id/commTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/commTitle" />
+
+                <TextView
+                    android:id="@+id/commDescr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Description"
+                    app:layout_constraintLeft_toLeftOf="@+id/commTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/commRating" />
+
+                <RatingBar
+                    android:id="@+id/commRating"
+                    style="@android:style/Widget.Holo.Light.RatingBar.Indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:defaultFocusHighlightEnabled="false"
+                    android:filterTouchesWhenObscured="true"
+                    android:isIndicator="true"
+                    android:numStars="5"
+                    android:scaleX="1"
+                    android:scaleY="1"
+                    android:stepSize="0.1"
+                    app:layout_constraintLeft_toLeftOf="@+id/commTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/commType" />
+
+                <ImageButton
+                    android:id="@+id/commDeleteButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@+id/commRating"
+                    app:layout_constraintLeft_toRightOf="@+id/commRating"
+                    app:srcCompat="@android:drawable/ic_menu_delete" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/comm_toolbar_manual"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+    </android.support.design.widget.AppBarLayout>
+
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ListView
+                android:id="@+id/commListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="true"
+                android:headerDividersEnabled="false"
+                android:longClickable="true"
+                app:layout_anchor="@id/comm_app_bar"
+                app:layout_constraintTop_toBottomOf="@id/spotPic"></ListView>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/commNewComment"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:clickable="true"
-        app:backgroundTint="@color/colorPrimary"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:backgroundTint="@android:color/holo_red_dark"
+        app:fabSize="mini"
+        app:layout_anchor="@id/comm_app_bar"
+        app:layout_anchorGravity="bottom|end"
+        app:rippleColor="@android:color/background_light"
         app:srcCompat="@android:drawable/ic_menu_add" />
 
-    <TextView
-        android:id="@+id/commTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:text="TextView"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent" />
-
-    <ImageView
-        android:id="@+id/spotPic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/commDescr"
-        app:srcCompat="@drawable/ic_menu_gallery" />
-
-    <TextView
-        android:id="@+id/commType"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        app:layout_constraintLeft_toLeftOf="@+id/commTitle"
-        app:layout_constraintTop_toBottomOf="@+id/commDistance" />
-
-    <TextView
-        android:id="@+id/commDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="distance"
-        app:layout_constraintLeft_toLeftOf="@+id/commTitle"
-        app:layout_constraintTop_toBottomOf="@+id/commTitle" />
-
-    <TextView
-        android:id="@+id/commDescr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Description"
-        app:layout_constraintLeft_toLeftOf="@+id/commTitle"
-        app:layout_constraintTop_toBottomOf="@+id/commRating" />
-
-    <RatingBar
-        android:id="@+id/commRating"
-        style="@android:style/Widget.Holo.Light.RatingBar.Indicator"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:defaultFocusHighlightEnabled="false"
-        android:filterTouchesWhenObscured="true"
-        android:isIndicator="true"
-        android:numStars="5"
-        android:scaleX="1"
-        android:scaleY="1"
-        android:stepSize="0.1"
-        app:layout_constraintLeft_toLeftOf="@+id/commTitle"
-        app:layout_constraintTop_toBottomOf="@+id/commType" />
-
-    <ImageButton
-        android:id="@+id/commDeleteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/commRating"
-        app:layout_constraintLeft_toRightOf="@+id/commRating"
-        app:srcCompat="@android:drawable/ic_menu_delete" />
-
-    <ListView
-        android:id="@+id/commListView"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:focusable="true"
-        android:longClickable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spotPic">
-
-
-    </ListView>
-
-</android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

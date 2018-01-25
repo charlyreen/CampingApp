@@ -7,13 +7,19 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.media.Image;
 import android.media.Rating;
+import android.net.Uri;
 import android.os.Handler;
 import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,6 +33,7 @@ import android.widget.Toast;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.auth.FirebaseAuth;
@@ -56,8 +63,10 @@ public class ShowComments extends AppCompatActivity {
     FloatingActionButton mCommNewComment;
     TextView mDistance;
     TextView mType;
-    ImageView mSpotPic;
+    //ImageView mSpotPic;
     ImageButton mcommDeleteButton;
+    CustomPagerAdapter mCustomPagerAdapter;
+    ViewPager mViewPager;
     private float spotRating;
     private int commCounter;
     private ArrayList<SpotComment> commentArrayList;
@@ -77,10 +86,14 @@ public class ShowComments extends AppCompatActivity {
         spotRating = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_comments);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         mRootRef = FirebaseDatabase.getInstance().getReference();
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
         //get UI elements
+        mCustomPagerAdapter = new CustomPagerAdapter(this);
+        mViewPager = findViewById(R.id.commviewPager);
+        mViewPager.setAdapter(mCustomPagerAdapter);
         mListComments = (ListView) findViewById(R.id.commListView);
         mTitle = (TextView) findViewById(R.id.commTitle);
         mDescr = (TextView) findViewById(R.id.commDescr);
@@ -88,7 +101,7 @@ public class ShowComments extends AppCompatActivity {
         mCommNewComment = (FloatingActionButton) findViewById(R.id.commNewComment);
         mDistance = (TextView) findViewById(R.id.commDistance);
         mType = (TextView) findViewById(R.id.commType);
-        mSpotPic = (ImageView) findViewById(R.id.spotPic);
+        //mSpotPic = (ImageView) findViewById(R.id.spotPic);
 
         //get Intent: Spot data + spotKey!
         Bundle extras = getIntent().getExtras();
@@ -157,7 +170,9 @@ public class ShowComments extends AppCompatActivity {
         mDistance.setText(thisSpot.getDistanceToInKM(mCurrentLocation) + " " + getString(R.string.showComments_distance));
         mType.setText(thisSpot.getType());
         //Download Image in Background -> UI doesnt freeze meeeen
-        new DownloadImageTask(mSpotPic).execute(thisSpot.getPic());
+        //new DownloadImageTask(mSpotPic).execute(thisSpot.getPic());
+        //get ALL pictures stored in DB under imagePahts/spotkey/index
+        getPictures(mRootRef, spotkey, mCustomPagerAdapter);
         mcommDeleteButton = findViewById(R.id.commDeleteButton);
         //Set onClickListener to Delete + Dialog INterface
         mcommDeleteButton.setOnClickListener(new View.OnClickListener() {
@@ -186,7 +201,40 @@ public class ShowComments extends AppCompatActivity {
 
 
     }
+    private void getPictures(DatabaseReference ref, String spotkey, final CustomPagerAdapter adapter) {
+        ref.child("imagePaths").child(spotkey).child("index").addChildEventListener(new ChildEventListener() {
+            @Override
+            /*
+            String storagePath = spotkey + "/" + countPics + ".png";
+                StorageReference indexPic = storageRef.child(storagePath);
+             */
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                String path = dataSnapshot.getValue(String.class);
+                Log.w("IMGPATHS00", path);
+                adapter.add(path);
+            }
 
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
     private void deleteSpot(String spotkey) {
         mRootRef.child("spots").child(spotkey).setValue(null);
         mRootRef.child("comments").child(spotkey).setValue(null);
@@ -252,5 +300,21 @@ public class ShowComments extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings)
+        {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

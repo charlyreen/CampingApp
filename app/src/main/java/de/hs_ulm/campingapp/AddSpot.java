@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -49,11 +50,18 @@ public class AddSpot extends AppCompatActivity
     String spotkey;
     ProgressDialog mProgress;
     String imgPath;
+    private int countPics;
+    CustomPagerAdapter mCustomPagerAdapter;
+    ViewPager mViewPager;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
+        countPics = 0;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_spot);
+        mCustomPagerAdapter = new CustomPagerAdapter(this);
+        mViewPager = findViewById(R.id.addSpotviewPager);
+        mViewPager.setAdapter(mCustomPagerAdapter);
         mRootRef = FirebaseDatabase.getInstance().getReference();
         spotkey = mRootRef.child("spots").push().getKey();
         launchPhoto = findViewById(R.id.addSpotLaunchCam);
@@ -90,21 +98,29 @@ public class AddSpot extends AppCompatActivity
     }
     public void onLaunchCamera()
     {
-        Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(takePic, REQUEST_IMAGE_CAPTURE);
+        if(countPics < 3) {
+            Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            startActivityForResult(takePic, REQUEST_IMAGE_CAPTURE);
+        }
+        else {
+            Toast.makeText(getApplicationContext(), getString(R.string.tooManyPics), Toast.LENGTH_SHORT).show();
+        }
     }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_IMAGE_CAPTURE) {
-            mProgress.setMessage("Uploading image...");
-            mProgress.show();
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            resizeBitmap(imageBitmap, 200);
-            mAddSpotImgPreview.setVisibility(View.VISIBLE);
-            mAddSpotImgPreview.setImageBitmap(imageBitmap);
-            String storagePath = spotkey + "/index.png";
-            StorageReference indexPic = storageRef.child(storagePath);
-            encodeBitmapAndSaveToFireBase(imageBitmap, indexPic);
+            if(countPics < 3) {
+                mProgress.setMessage("Uploading image...");
+                mProgress.show();
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                resizeBitmap(imageBitmap, 200);
+                //mAddSpotImgPreview.setVisibility(View.VISIBLE);
+                //mAddSpotImgPreview.setImageBitmap(imageBitmap);
+                String storagePath = spotkey + "/" + countPics + ".png";
+                StorageReference indexPic = storageRef.child(storagePath);
+                encodeBitmapAndSaveToFireBase(imageBitmap, indexPic);
+                countPics++;
+            }
         }
     }
     public void encodeBitmapAndSaveToFireBase(Bitmap bitmap, StorageReference stRef)
@@ -121,6 +137,7 @@ public class AddSpot extends AppCompatActivity
                 imageToDB(downloadUrl, mRootRef, spotkey);
                 imgPath = downloadUrl.toString();
                 Log.d("Success", taskSnapshot.getDownloadUrl().toString());
+                mCustomPagerAdapter.add(imgPath);
                 mProgress.dismiss();
             }
         })
@@ -134,8 +151,8 @@ public class AddSpot extends AppCompatActivity
     }
     public void imageToDB(Uri pathToImg, DatabaseReference mmRootRef, String spotkey) {
         String pathToImgStr;
-        pathToImgStr = pathToImg.getPath();
-        mmRootRef.child("imagePaths").child(spotkey).child("index").setValue(pathToImgStr);
+        pathToImgStr = pathToImg.toString();
+        mmRootRef.child("imagePaths").child(spotkey).child("index").push().setValue(pathToImgStr);
     }
 
     private Bitmap resizeBitmap(Bitmap img, int maxSize) {
