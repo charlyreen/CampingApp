@@ -122,6 +122,13 @@
         "You can only remove comments you are the author of.\n"
         "While in a spot's detail screen, find your comment and click on the red &#215;.\n\n"
 
+        <b>"&#8594; Remove a spot:\n"</b>
+
+        "Spots can not be removed directly but have to be reported.\n"
+        "While in a spot's detail screen, click the button in the top right corner of the screen."
+        "this will open your mail program with a mail-template in which you only have to add a"
+        "reason for the report. \n\n"
+
     </string>
 
 </resources>
