@@ -262,7 +262,7 @@ public class ShowComments extends AppCompatActivity {
             }
         });
     }
-    private void deleteSpot(String spotkey) {
+    private void deleteSpotOld(String spotkey) {
         mRootRef.child("spots").child(spotkey).setValue(null);
         mRootRef.child("comments").child(spotkey).setValue(null);
         mRootRef.child("imagePaths").child(spotkey).setValue(null);
@@ -270,6 +270,38 @@ public class ShowComments extends AppCompatActivity {
         //so: delete the index file:
         StorageReference refToDelete= storageRef.child(spotkey + "/index.png");
         refToDelete.delete();
+        finish();
+    }
+    private void deleteSpot(String spotkey) {
+        mRootRef.child("spots").child(spotkey).setValue(null);
+        mRootRef.child("comments").child(spotkey).setValue(null);
+        mRootRef.child("imagePaths").child(spotkey).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    for (DataSnapshot nodesSnapshot : dataSnapshot.getChildren()) {
+                        for(DataSnapshot pathsSnapshot: nodesSnapshot.getChildren()) {
+                            String path = pathsSnapshot.getValue(String.class);
+                            if (path != null) {
+                                Log.w("paths", path);
+                                StorageReference ref = storage.getReferenceFromUrl(path);
+                                ref.delete();
+                            }
+                            else {
+                                Log.w("paths", "null");
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        mRootRef.child("imagePaths").child(spotkey).setValue(null);
         finish();
     }
     @Override

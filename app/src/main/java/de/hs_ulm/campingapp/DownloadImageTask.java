@@ -34,19 +34,47 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         }
         return mIcon11;
     }
-    private Bitmap resizeBitmap(Bitmap img, int toWidth, int toHeight) {
+    /*private Bitmap resizeBitmap(Bitmap img, int toWidth, int toHeight) {
         Bitmap resized = null;
         if(img != null) {
             resized = Bitmap.createScaledBitmap(img, toWidth, toHeight, true);
         }
         return resized;
+    }*/
+
+    private Bitmap resize(Bitmap image, int maxWidth, int maxHeight) {
+        if(image != null) {
+            if (maxHeight > 0 && maxWidth > 0) {
+                int width = image.getWidth();
+                int height = image.getHeight();
+                float ratioBitmap = (float) width / (float) height;
+                float ratioMax = (float) maxWidth / (float) maxHeight;
+
+                int finalWidth = maxWidth;
+                int finalHeight = maxHeight;
+                if (ratioMax > ratioBitmap) {
+                    finalWidth = (int) ((float)maxHeight * ratioBitmap);
+                } else {
+                    finalHeight = (int) ((float)maxWidth / ratioBitmap);
+                }
+                image = Bitmap.createScaledBitmap(image, finalWidth, finalHeight, true);
+                return image;
+            } else {
+                return image;
+            }
+        }
+        else {
+            return null;
+        }
+
     }
 
     protected void onPostExecute(Bitmap result) {
         if(result != null) {
             /*Bitmap newResult = resizeBitmap(result, 100, 100);
             img.setImageBitmap(newResult);*/
-            img.setImageBitmap(result);
+            Bitmap newResult = resize(result, 500,500);
+            img.setImageBitmap(newResult);
         }
     }
     protected void onCancelled(Bitmap result) {
