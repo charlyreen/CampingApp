@@ -69,8 +69,8 @@ public class AddSpot extends AppCompatActivity
         description = (EditText) findViewById(R.id.addSpotDescription);
         //EditText picture = (EditText) findViewById(R.id.addSpotPicture);
         type = (Spinner) findViewById(R.id.addSpotSpinnerType);
-        mAddSpotImgPreview = findViewById(R.id.addSpotImgPreview);
-        mAddSpotImgPreview.setVisibility(View.GONE);
+        //mAddSpotImgPreview = findViewById(R.id.addSpotImgPreview);
+        //mAddSpotImgPreview.setVisibility(View.GONE);
         mProgress = new ProgressDialog(this);
         //Set onClickListener for launching Camera
         launchPhoto.setOnClickListener(new View.OnClickListener() {

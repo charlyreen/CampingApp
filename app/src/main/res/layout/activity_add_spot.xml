@@ -83,6 +83,7 @@
         android:layout_width="350dp"
         android:layout_height="36dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:entries="@array/Filters"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addSpotTypeTitle" />
@@ -114,36 +115,23 @@
         android:id="@+id/addSpotLaunchCam"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintLeft_toLeftOf="@+id/addSpotSpinnerType"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addSpotSpinnerType"
         app:srcCompat="@drawable/ic_menu_camera" />
-
-    <ImageView
-    android:id="@+id/addSpotImgPreview"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    app:layout_constraintRight_toRightOf="@+id/addSpotDescription"
-    app:layout_constraintTop_toTopOf="@+id/addSpotLaunchCam"
-    app:srcCompat="@drawable/ic_menu_gallery" />
-    <ImageView
-        android:id="@+id/addSpotImgPreview2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintRight_toLeftOf="@+id/addSpotImgPreview"
-        app:layout_constraintTop_toTopOf="@+id/addSpotLaunchCam"
-        app:srcCompat="@drawable/ic_menu_gallery" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/addSpotviewPager"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toTopOf="@+id/addSpotButtonCancel"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addSpotLaunchCam" />
+        app:layout_constraintStart_toEndOf="@+id/addSpotLaunchCam"
+        app:layout_constraintTop_toBottomOf="@+id/addSpotSpinnerType" />
 
 </android.support.constraint.ConstraintLayout>
