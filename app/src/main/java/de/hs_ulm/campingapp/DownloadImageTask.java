@@ -73,8 +73,8 @@ public class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
         if(result != null) {
             /*Bitmap newResult = resizeBitmap(result, 100, 100);
             img.setImageBitmap(newResult);*/
-            Bitmap newResult = resize(result, 500,500);
-            img.setImageBitmap(newResult);
+            //Bitmap newResult = resize(result, 500,500);
+            img.setImageBitmap(result);
         }
     }
     protected void onCancelled(Bitmap result) {

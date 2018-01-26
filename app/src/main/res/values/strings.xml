@@ -45,6 +45,9 @@
     <string name="reportSubject">Reporting spot: </string>
     <string name="reportText">Dear Administrator,\n I\'m reporting this spot because </string>
 
+    <string name="selectcamgallery">Use Camera or select picture from gallery</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
     <string name="manual_text">
         <big><b><u>"What you need for the app to work:\n\n"</u></b></big>
 

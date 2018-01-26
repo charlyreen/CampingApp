@@ -1,14 +1,20 @@
 package de.hs_ulm.campingapp;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +34,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Created by Martin on 06.01.18.
@@ -47,6 +56,7 @@ public class AddSpot extends AppCompatActivity
     Spinner type;
     ImageView mAddSpotImgPreview;
     int REQUEST_IMAGE_CAPTURE = 103;
+    int REQUEST_IMAGE_GALLERY = 104;
     DatabaseReference mRootRef;
     String spotkey;
     ProgressDialog mProgress;
@@ -77,7 +87,26 @@ public class AddSpot extends AppCompatActivity
         launchPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onLaunchCamera();
+                AlertDialog.Builder builder= new AlertDialog.Builder(AddSpot.this);
+                builder.setTitle(getString(R.string.selectcamgallery));
+                builder.setMessage(getString(R.string.selectcamgallery));
+                builder.setPositiveButton(getString(R.string.camera), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        onLaunchCamera();
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.setNegativeButton(getString(R.string.gallery), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        onLaunchGallery();
+                        dialogInterface.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+
             }
         });
 
@@ -107,23 +136,72 @@ public class AddSpot extends AppCompatActivity
             Toast.makeText(getApplicationContext(), getString(R.string.tooManyPics), Toast.LENGTH_SHORT).show();
         }
     }
+    public void onLaunchGallery()
+    {
+        if(countPics < 3) {
+            Intent launchGallery = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            launchGallery.setType("image/*");
+
+            startActivityForResult(launchGallery, REQUEST_IMAGE_GALLERY);
+        }
+        else {
+            Toast.makeText(getApplicationContext(), getString(R.string.tooManyPics), Toast.LENGTH_SHORT).show();
+        }
+    }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             if(countPics < 3) {
                 mProgress.setMessage("Uploading image...");
                 mProgress.show();
                 Bundle extras = data.getExtras();
-                Bitmap imageBitmap = (Bitmap) extras.get("data");
-                resizeBitmap(imageBitmap, 200);
+                Bitmap oldimageBitmap = (Bitmap) extras.get("data");
+                Bitmap imageBitmap = resizeBitmap(oldimageBitmap, 500, 500);
                 //mAddSpotImgPreview.setVisibility(View.VISIBLE);
                 //mAddSpotImgPreview.setImageBitmap(imageBitmap);
                 String storagePath = spotkey + "/" + countPics + ".png";
                 StorageReference indexPic = storageRef.child(storagePath);
                 encodeBitmapAndSaveToFireBase(imageBitmap, indexPic);
                 countPics++;
-
             }
         }
+        if(requestCode == REQUEST_IMAGE_GALLERY && resultCode == RESULT_OK) {
+            if(countPics < 3) {
+                try {
+                    mProgress.setMessage("Uploading image...");
+                    mProgress.show();
+                    Uri uri = data.getData();
+                    /*mProgress.setMessage("Uploading image...");
+                    mProgress.show();*/
+                    Log.w("galleryuri", uri.toString());
+                    String filepath = getRealPathFromURI(AddSpot.this, uri);
+                    Log.w("filepath", filepath);
+
+                    //Bitmap imageBitmap = BitmapFactory.decodeFile(filepath);
+                    InputStream is = getContentResolver().openInputStream(uri);
+                    Bitmap oldimageBitmap = BitmapFactory.decodeStream(is);
+                    Bitmap imageBitmap = resizeBitmap(oldimageBitmap, 500, 500);
+                    // Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+
+                    String storagePath = spotkey + "/" + countPics + ".png";
+                    StorageReference indexPic = storageRef.child(storagePath);
+                    encodeBitmapAndSaveToFireBase(imageBitmap, indexPic);
+                    countPics++;
+                } catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    private String getRealPathFromURI(Context mContext, Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(mContext, contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        cursor.close();
+        return result;
     }
     public void encodeBitmapAndSaveToFireBase(Bitmap bitmap, StorageReference stRef)
     {
@@ -157,25 +235,32 @@ public class AddSpot extends AppCompatActivity
         mmRootRef.child("imagePaths").child(spotkey).child("index").push().setValue(pathToImgStr);
     }
 
-    private Bitmap resizeBitmap(Bitmap img, int maxSize) {
-        Bitmap resized = null;
+    private Bitmap resizeBitmap(Bitmap image, int maxWidth, int maxHeight) {
+        if(image != null) {
+            if (maxHeight > 0 && maxWidth > 0) {
+                int width = image.getWidth();
+                int height = image.getHeight();
+                float ratioBitmap = (float) width / (float) height;
+                float ratioMax = (float) maxWidth / (float) maxHeight;
 
-        int outWidth;
-        int outHeight;
-        int inWidth = img.getWidth();
-        int inHeight = img.getHeight();
-        if(inWidth > inHeight){
-            outWidth = maxSize;
-            outHeight = (inHeight * maxSize) / inWidth;
-        } else {
-            outHeight = maxSize;
-            outWidth = (inWidth * maxSize) / inHeight;
+                int finalWidth = maxWidth;
+                int finalHeight = maxHeight;
+                if (ratioMax > ratioBitmap) {
+                    finalWidth = (int) ((float)maxHeight * ratioBitmap);
+                } else {
+                    finalHeight = (int) ((float)maxWidth / ratioBitmap);
+                }
+                Bitmap imagenew = Bitmap.createScaledBitmap(image, finalWidth, finalHeight, true);
+                Log.e("finalSizes", "FinalWidth " + Integer.toString(finalWidth) + "FinalHeight " + Integer.toString(finalHeight));
+                return imagenew;
+            } else {
+                return image;
+            }
+        }
+        else {
+            return null;
         }
 
-        if(img != null) {
-            resized = Bitmap.createScaledBitmap(img, outWidth, outHeight, true);
-        }
-        return resized;
     }
     /*public void onStart()
     {
