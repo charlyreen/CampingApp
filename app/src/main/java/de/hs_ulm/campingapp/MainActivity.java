@@ -442,8 +442,8 @@ public class MainActivity extends AppCompatActivity
                         value.remove();
                     }
                 }
-                Toast.makeText(getApplicationContext(), deletedSpot.getName(), Toast.LENGTH_SHORT)
-                        .show();
+                //Toast.makeText(getApplicationContext(), deletedSpot.getName(), Toast.LENGTH_SHORT)
+                //        .show();
                 //Marker deletedMarker = markers.get(deletedSpot);
                 //deletedMarker.remove();
             }
@@ -679,8 +679,8 @@ public class MainActivity extends AppCompatActivity
             FirebaseUser user = mAuth.getCurrentUser();
             if(user == null) {
                 signIn();
-                Toast.makeText(getApplicationContext(), "Logged in " , Toast.LENGTH_LONG)
-                        .show();
+                //Toast.makeText(getApplicationContext(), "Logged in " , Toast.LENGTH_LONG)
+                //        .show();
             }
             else {
                 signOut();

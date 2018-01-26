@@ -301,8 +301,8 @@ public class AddSpot extends AppCompatActivity
                 type.getSelectedItem().toString(), true);
 
 
-        Toast.makeText(getApplicationContext(), newSpot.toString() , Toast.LENGTH_LONG)
-                .show();
+        //Toast.makeText(getApplicationContext(), newSpot.toString() , Toast.LENGTH_LONG)
+        //        .show();
         mRootRef.child("spots").child(spotkey).setValue(newSpot);
 
         finish();
