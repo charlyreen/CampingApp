@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -33,14 +34,14 @@
         android:id="@+id/addSpotName"
         android:layout_width="350dp"
         android:layout_height="40dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:ems="10"
         android:hint="Insert name here"
         android:inputType="textMultiLine"
         android:selectAllOnFocus="false"
         android:singleLine="false"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addSpotNameTitle" />
+        app:layout_constraintBottom_toBottomOf="@+id/addSpotNameTitle"
+        app:layout_constraintStart_toEndOf="@+id/addSpotNameTitle" />
 
     <TextView
         android:id="@+id/addSpotDescriptionTitle"
@@ -57,14 +58,14 @@
         android:id="@+id/addSpotDescription"
         android:layout_width="350dp"
         android:layout_height="40dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:ems="10"
         android:hint="Insert description here"
         android:inputType="textMultiLine"
         android:selectAllOnFocus="false"
         android:singleLine="false"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addSpotDescriptionTitle" />
+        app:layout_constraintBottom_toBottomOf="@+id/addSpotDescriptionTitle"
+        app:layout_constraintStart_toEndOf="@+id/addSpotDescriptionTitle" />
 
     <TextView
         android:id="@+id/addSpotTypeTitle"
@@ -81,18 +82,17 @@
         android:id="@+id/addSpotSpinnerType"
         android:layout_width="350dp"
         android:layout_height="36dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
         android:entries="@array/Filters"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addSpotTypeTitle" />
+        app:layout_constraintBottom_toBottomOf="@+id/addSpotTypeTitle"
+        app:layout_constraintStart_toEndOf="@+id/addSpotTypeTitle" />
 
     <Button
         android:id="@+id/addSpotButtonOK"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="64dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="32dp"
         android:onClick="oukay"
         android:text="Create"
         android:textAppearance="@style/TextAppearance.AppCompat.Button"
@@ -103,21 +103,21 @@
         android:id="@+id/addSpotButtonCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="64dp"
+        android:layout_marginBottom="8dp"
         android:onClick="cancel"
         android:text="Cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/addSpotButtonOK"
+        app:layout_constraintEnd_toEndOf="@+id/addSpotButtonOK" />
 
     <ImageButton
         android:id="@+id/addSpotLaunchCam"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginBottom="38dp"
+        android:layout_marginStart="32dp"
+        android:contentDescription="Start Camera"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addSpotSpinnerType"
         app:srcCompat="@drawable/ic_menu_camera" />
 
     <android.support.v4.view.ViewPager
@@ -125,12 +125,12 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="64dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/addSpotButtonCancel"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/addSpotButtonOK"
         app:layout_constraintStart_toEndOf="@+id/addSpotLaunchCam"
-        app:layout_constraintTop_toBottomOf="@+id/addSpotSpinnerType" />
+        app:layout_constraintTop_toBottomOf="@+id/addSpotTypeTitle" />
 
 </android.support.constraint.ConstraintLayout>
